@@ -4,8 +4,12 @@ import os
 
 files = [
     "code.py",
-    "scd30.py",
-    os.path.join("font", "Helvetica-Bold-16.bdf")
+    "scd30.py"
+]
+
+folders = [
+    "lib",
+    "font"
 ]
 
 path = "."
@@ -19,5 +23,18 @@ def deploy(file_name):
     print("Copying {} to {}".format(source, final_destination))
     shutil.copy(source, final_destination)
 
+def deployFolder(folder):
+    print("Folder: {}".format(folder))
+    searchGlob = os.path.join(folder, "*")
+    listFromGlob = glob.glob(searchGlob, recursive=True)
+    for item in listFromGlob:
+        if(os.path.isdir(item)):
+            deployFolder(item)
+            continue
+        deploy(item)
+
 for file in files:
     deploy(file)
+
+for folder in folders:
+    deployFolder(folder)
