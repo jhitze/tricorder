@@ -129,7 +129,7 @@ FOREGROUND_TEXT_COLOR = 0x000000
 # Do something to show that it's loading.
 rainbow_cycle(0)
 
-splash = displayio.Group(max_size=300)
+splash = displayio.Group()
 board.DISPLAY.show(splash)
 color_bitmap = displayio.Bitmap(240, 240, 1)
 color_palette = displayio.Palette(1)
