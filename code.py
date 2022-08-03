@@ -5,8 +5,7 @@ import touchio
 import digitalio
 import displayio
 import terminalio
-from adafruit_display_text import label
-from adafruit_bitmap_font import bitmap_font
+from adafruit_display_text import label, wrap_text_to_lines
 from adafruit_display_shapes.rect import Rect
 import adafruit_scd30
 
@@ -75,7 +74,7 @@ def c02_text(c02):
 # Numbers from Kurtis Baute
 # https://www.youtube.com/watch?v=1Nh_vxpycEA
 # https://www.youtube.com/watch?v=PoKvPkwP4mM
-def cognitive_function_text(c02):
+def cognitive_function_words(c02):
     if(c02 > 39000):
         return "Death Possible"
     elif(c02 >= 10000):
@@ -90,6 +89,9 @@ def cognitive_function_text(c02):
         return "Above outside levels"
     else:
         return "Outside level ~411ppm"
+
+def cognitive_function_text(co2):
+    return "\n".join(wrap_text_to_lines(cognitive_function_words(co2), 20))
 
 def max_co2_text(max_co2_level):
     return "Max CO2: {:.2f} PPM".format(max_co2_level)
@@ -137,46 +139,46 @@ splash.append(rect)
 header_label = label.Label(font, text="Cheap-o Tricorder")
 header_label.color = BACKGROUND_TEXT_COLOR
 header_label.scale = defaultLabelScale
-header_label.anchor_point = (0, 0)
-header_label.anchored_position = (10, 10)
+header_label.anchor_point = (0.5, 0)
+header_label.anchored_position = (display.width /2, 10)
 splash.append(header_label)
 
 # Setup and Center the c02 Label
 c02_label = label.Label(font, text=c02_text(9999.99), line_spacing=1)
-c02_label.anchor_point = (0, 0)
-c02_label.anchored_position = (10, 50)
+c02_label.anchor_point = (0.5, 0)
+c02_label.anchored_position = (display.width /2, 50)
 c02_label.color = FOREGROUND_TEXT_COLOR
 c02_label.scale = defaultLabelScale
 splash.append(c02_label)
 
 # Setup and Center the health Label
 cognitive_function_label = label.Label(font, text=cognitive_function_text(9999.99), line_spacing=1)
-cognitive_function_label.anchor_point = (0, 0)
-cognitive_function_label.anchored_position = (10, 70)
+cognitive_function_label.anchor_point = (0.5, 0)
+cognitive_function_label.anchored_position = (display.width /2, 75)
 cognitive_function_label.color = FOREGROUND_TEXT_COLOR
 cognitive_function_label.scale = 2
 splash.append(cognitive_function_label)
 
 # Setup and Center the health Label
 max_co2_label = label.Label(font, text=max_co2_text(9999.99), line_spacing=1)
-max_co2_label.anchor_point = (0, 0)
-max_co2_label.anchored_position = (10, 90)
+max_co2_label.anchor_point = (0.5, 0)
+max_co2_label.anchored_position = (display.width /2, 125)
 max_co2_label.color = FOREGROUND_TEXT_COLOR
 max_co2_label.scale = defaultLabelScale
 splash.append(max_co2_label)
 
 # Setup and Center the temp and humidity Label
 temp_and_humidity_label = label.Label(font, text=temp_and_humidity_text(99.99,99), line_spacing=1)
-temp_and_humidity_label.anchor_point = (0, 0)
-temp_and_humidity_label.anchored_position = (10, 160)
+temp_and_humidity_label.anchor_point = (0.5, 0)
+temp_and_humidity_label.anchored_position = (display.width /2, 160)
 temp_and_humidity_label.color = FOREGROUND_TEXT_COLOR
 temp_and_humidity_label.scale = defaultLabelScale
 splash.append(temp_and_humidity_label)
 
 # Setup and Center the refresh Label
 refresh_label = label.Label(font, text=refresh_text(1), line_spacing=1)
-refresh_label.anchor_point = (0, 0)
-refresh_label.anchored_position = (10, 200)
+refresh_label.anchor_point = (0.5, 0)
+refresh_label.anchored_position = (display.width /2, 200)
 refresh_label.color = BACKGROUND_TEXT_COLOR
 refresh_label.scale = defaultLabelScale
 splash.append(refresh_label)
@@ -190,7 +192,6 @@ while True:
         color_chase(YELLOW, 0.01)
         while scd30.data_available != 1:
                 time.sleep(0.200)
-                #color_chase(YELLOW, 0.05)
 
         try:
             co2 = scd30.CO2
@@ -206,9 +207,8 @@ while True:
 
         if(max_co2 < co2):
             max_co2 = co2
-            max_co2_label.text = max_co2_text(max_co2)
-        else:
-            max_co2_label.text = max_co2_text(max_co2)
+            
+        max_co2_label.text = max_co2_text(max_co2)
 
         temp_and_humidity_label.text = temp_and_humidity_text(temp, relh)
 
