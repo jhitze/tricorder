@@ -3,13 +3,13 @@ import board
 import neopixel
 import touchio
 import digitalio
-from scd30 import SCD30
 import displayio
 import terminalio
 from adafruit_display_text import label
 from adafruit_bitmap_font import bitmap_font
 from adafruit_display_shapes.rect import Rect
 from analogio import AnalogIn
+import adafruit_scd30
 
 vbat_voltage = AnalogIn(board.VOLTAGE_MONITOR)
 
@@ -21,7 +21,7 @@ def get_voltage(pin):
 
 
 i2c = board.I2C()
-scd30 = SCD30(i2c, 0x61)
+scd30 = adafruit_scd30.SCD30(i2c)
 
 
 
@@ -193,19 +193,20 @@ refresh_label.color = FOREGROUND_TEXT_COLOR
 splash.append(refresh_label)
 
 
-scd30.set_measurement_interval(5)
-
+scd30.measurement_interval = 5
 page = 0
 
 while True:
     if page == 0:
         color_chase(YELLOW, 0.01)
-        while scd30.get_status_ready() != 1:
+        while scd30.data_available != 1:
                 time.sleep(0.200)
                 #color_chase(YELLOW, 0.05)
 
         try:
-            co2, temp, relh = scd30.read_measurement()
+            co2 = scd30.CO2
+            temp = scd30.temperature
+            relh = scd30.relative_humidity
             color_chase(GREEN, 0.01)
             color_chase(BLACK, 0.01)
         except Exception:
