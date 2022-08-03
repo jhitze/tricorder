@@ -207,8 +207,9 @@ while True:
 
         if(max_co2 < co2):
             max_co2 = co2
-            
-        max_co2_label.text = max_co2_text(max_co2)
+        
+        if(max_co2_label.text != max_co2_text(max_co2)):
+            max_co2_label.text = max_co2_text(max_co2)
 
         temp_and_humidity_label.text = temp_and_humidity_text(temp, relh)
 
@@ -242,5 +243,5 @@ while True:
 
         refresh_label.text = refresh_text(time_left)
 
-        time.sleep(0.05)
+        time.sleep(0.01)
         
