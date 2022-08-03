@@ -8,26 +8,16 @@ import terminalio
 from adafruit_display_text import label
 from adafruit_bitmap_font import bitmap_font
 from adafruit_display_shapes.rect import Rect
-from analogio import AnalogIn
 import adafruit_scd30
-
-vbat_voltage = AnalogIn(board.VOLTAGE_MONITOR)
-
-
-def get_voltage(pin):
-    return (pin.value * 3.3) / 65536 * 2
-
-
 
 
 i2c = board.I2C()
 scd30 = adafruit_scd30.SCD30(i2c)
-
-
-
+scd30.measurement_interval = 5
 display = board.DISPLAY
 # Set text, font, and color
-font = bitmap_font.load_font("/font/Helvetica-Bold-16.bdf")
+#font = bitmap_font.load_font("/font/Helvetica-Bold-16.bdf")
+font = terminalio.FONT
 color = 0x11bf08
 
 pixel_pin = board.NEOPIXEL
@@ -105,7 +95,7 @@ def max_co2_text(max_co2_level):
     return "Max CO2: {:.2f} PPM".format(max_co2_level)
 
 def temp_and_humidity_text(temp, humidity):
-    return "T: {:.2f}°C    H: {:.0f} %".format(temp, humidity)
+    return "T:{:.2f}°C  H:{:.0f}%".format(temp, humidity)
 
 def refresh_text(time_left):
     return "Refresh in {}".format(time_left)
@@ -119,7 +109,7 @@ PURPLE = (180, 0, 255)
 BLACK = (0,0,0)
 
 max_co2 = 0
-
+defaultLabelScale = 2
 ### new display idea
 BACKGROUND_COLOR = 0xFF0000
 FOREGROUND_COLOR = 0xFFFFFF
@@ -128,72 +118,71 @@ FOREGROUND_TEXT_COLOR = 0x000000
 
 # Do something to show that it's loading.
 rainbow_cycle(0)
-
+print("display width: " + str(display.width))
 splash = displayio.Group()
-board.DISPLAY.show(splash)
-color_bitmap = displayio.Bitmap(240, 240, 1)
-color_palette = displayio.Palette(1)
-color_palette[0] = BACKGROUND_COLOR
 
-bg_sprite = displayio.TileGrid(color_bitmap,
-                               pixel_shader=color_palette,
-                               x=0, y=0)
-splash.append(bg_sprite)
+# Draw a top rectangle
+rect = Rect(0, 0, 240, 140, fill=BACKGROUND_COLOR)
+splash.append(rect)
 
-# Draw a Foreground Rectangle where the name goes
+# Draw a Foreground Rectangle
 rect = Rect(0, 50, 240, 140, fill=FOREGROUND_COLOR)
 splash.append(rect)
 
+# Draw bottom rectangle
+rect = Rect(0, 190, 240, 140, fill=BACKGROUND_COLOR)
+splash.append(rect)
+
 # Setup and Center the header label
-header_label = label.Label(font, text="Cheap-o Tricorder", color=color)
-(x, y, w, h) = header_label.bounding_box
-header_label.x = (120 - w // 2)
-header_label.y = 20
+header_label = label.Label(font, text="Cheap-o Tricorder")
 header_label.color = BACKGROUND_TEXT_COLOR
+header_label.scale = defaultLabelScale
+header_label.anchor_point = (0, 0)
+header_label.anchored_position = (10, 10)
 splash.append(header_label)
 
 # Setup and Center the c02 Label
-c02_label = label.Label(font, text=c02_text(9999.99), line_spacing=1, max_glyphs=25)
-(x, y, w, h) = c02_label.bounding_box
-c02_label.x = (120 - w // 2)
-c02_label.y = 60
+c02_label = label.Label(font, text=c02_text(9999.99), line_spacing=1)
+c02_label.anchor_point = (0, 0)
+c02_label.anchored_position = (10, 50)
 c02_label.color = FOREGROUND_TEXT_COLOR
+c02_label.scale = defaultLabelScale
 splash.append(c02_label)
 
 # Setup and Center the health Label
-cognitive_function_label = label.Label(font, text=cognitive_function_text(9999.99), line_spacing=1, max_glyphs=30)
-(x, y, w, h) = cognitive_function_label.bounding_box
-cognitive_function_label.x = (120 - w // 2)
-cognitive_function_label.y = 90
+cognitive_function_label = label.Label(font, text=cognitive_function_text(9999.99), line_spacing=1)
+cognitive_function_label.anchor_point = (0, 0)
+cognitive_function_label.anchored_position = (10, 70)
 cognitive_function_label.color = FOREGROUND_TEXT_COLOR
+cognitive_function_label.scale = 2
 splash.append(cognitive_function_label)
 
 # Setup and Center the health Label
-max_co2_label = label.Label(font, text=max_co2_text(9999.99), line_spacing=1, max_glyphs=30)
-(x, y, w, h) = max_co2_label.bounding_box
-max_co2_label.x = (120 - w // 2)
-max_co2_label.y = 120
+max_co2_label = label.Label(font, text=max_co2_text(9999.99), line_spacing=1)
+max_co2_label.anchor_point = (0, 0)
+max_co2_label.anchored_position = (10, 90)
 max_co2_label.color = FOREGROUND_TEXT_COLOR
+max_co2_label.scale = defaultLabelScale
 splash.append(max_co2_label)
 
 # Setup and Center the temp and humidity Label
-temp_and_humidity_label = label.Label(font, text=temp_and_humidity_text(99.99,99), line_spacing=1, max_glyphs=25)
-(x, y, w, h) = temp_and_humidity_label.bounding_box
-temp_and_humidity_label.x = (120 - w // 2)
-temp_and_humidity_label.y = 180
+temp_and_humidity_label = label.Label(font, text=temp_and_humidity_text(99.99,99), line_spacing=1)
+temp_and_humidity_label.anchor_point = (0, 0)
+temp_and_humidity_label.anchored_position = (10, 160)
 temp_and_humidity_label.color = FOREGROUND_TEXT_COLOR
+temp_and_humidity_label.scale = defaultLabelScale
 splash.append(temp_and_humidity_label)
 
 # Setup and Center the refresh Label
-refresh_label = label.Label(font, text=refresh_text(1), line_spacing=1, max_glyphs=15)
-(x, y, w, h) = refresh_label.bounding_box
-refresh_label.x = (120 - w // 2)
-refresh_label.y = 220
-refresh_label.color = FOREGROUND_TEXT_COLOR
+refresh_label = label.Label(font, text=refresh_text(1), line_spacing=1)
+refresh_label.anchor_point = (0, 0)
+refresh_label.anchored_position = (10, 200)
+refresh_label.color = BACKGROUND_TEXT_COLOR
+refresh_label.scale = defaultLabelScale
 splash.append(refresh_label)
 
+board.DISPLAY.show(splash)
 
-scd30.measurement_interval = 5
 page = 0
 
 while True:
@@ -214,8 +203,6 @@ while True:
         c02_label.text = c02_text(co2)
 
         cognitive_function_label.text = cognitive_function_text(co2)
-        (x, y, w, h) = cognitive_function_label.bounding_box
-        cognitive_function_label.x = (120 - w // 2)
 
         if(max_co2 < co2):
             max_co2 = co2
@@ -256,3 +243,4 @@ while True:
         refresh_label.text = refresh_text(time_left)
 
         time.sleep(0.01)
+        
