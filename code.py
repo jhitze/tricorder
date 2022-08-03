@@ -69,7 +69,7 @@ def rainbow_cycle(wait):
         time.sleep(wait)
 
 def c02_text(c02):
-    return "CO2: {:.2f} PPM".format(c02)
+    return "CO2: {:.0f} PPM".format(c02)
 
 # Numbers from Kurtis Baute
 # https://www.youtube.com/watch?v=1Nh_vxpycEA
@@ -94,7 +94,7 @@ def cognitive_function_text(co2):
     return "\n".join(wrap_text_to_lines(cognitive_function_words(co2), 20))
 
 def max_co2_text(max_co2_level):
-    return "Max CO2: {:.2f} PPM".format(max_co2_level)
+    return "Max CO2: {:.0f} PPM".format(max_co2_level)
 
 def temp_and_humidity_text(temp, humidity):
     return "T:{:.2f}°C  H:{:.0f}%".format(temp, humidity)
@@ -152,7 +152,7 @@ c02_label.scale = defaultLabelScale
 splash.append(c02_label)
 
 # Setup and Center the health Label
-cognitive_function_label = label.Label(font, text=cognitive_function_text(9999.99), line_spacing=1)
+cognitive_function_label = label.Label(font, text=cognitive_function_text(9999.99), line_spacing=.75)
 cognitive_function_label.anchor_point = (0.5, 0)
 cognitive_function_label.anchored_position = (display.width /2, 75)
 cognitive_function_label.color = FOREGROUND_TEXT_COLOR
@@ -228,7 +228,7 @@ while True:
         max_co2_label.text = "page 3 bottom"
         temp_and_humidity_label.text = temp_and_humidity_text(temp, relh)
 
-    for time_left in range(100,0,-1):
+    for time_left in range(50,0,-1):
         
         if touch_A2.value:
             page = 0
@@ -242,5 +242,5 @@ while True:
 
         refresh_label.text = refresh_text(time_left)
 
-        time.sleep(0.01)
+        time.sleep(0.05)
         
