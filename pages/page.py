@@ -16,3 +16,9 @@ class Page:
         self.header_label.anchor_point = (0.5, 0)
         self.header_label.anchored_position = (self.display_width /2, 10)
         self.group.append(self.header_label)
+    
+    def check_sensor_readiness(self):
+        pass
+
+    def update_values(self):
+        pass

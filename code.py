@@ -68,44 +68,33 @@ rainbow_cycle(0)
 co2_page = Co2Page(display.width, i2c)
 temperature_page = TemperaturePage(display.width)
 
+
+
+page = co2_page
 board.DISPLAY.show(co2_page.group)
 
-page = 0
-
 while True:
-    if page == 0:
-        color_chase(YELLOW, 0.01)
-        co2_page.check_sensor_readiness()
+    color_chase(YELLOW, 0.01)
+    page.check_sensor_readiness()
+        
 
-        try:
-            co2_page.update_values()
-            color_chase(GREEN, 0.01)
-            color_chase(BLACK, 0.01)
-        except:
-            color_chase(RED, 0.01)
-            color_chase(BLACK, 0.01)
-            pass
-
-    elif page == 1:
-        # c02_label.text = "page 2 top"
-        # cognitive_function_label.text = "page 2 middle"
-        # max_co2_label.text = "page 2 bottom"
-        # temp_and_humidity_label.text = temp_and_humidity_text(temp, relh)
+    try:
+        page.update_values()
+        color_chase(GREEN, 0.01)
+        color_chase(BLACK, 0.01)
+    except:
+        color_chase(RED, 0.01)
+        color_chase(BLACK, 0.01)
         pass
-
-    elif page == 2:
-        pass
-        # c02_label.text = "page 3 top"
-        # cognitive_function_label.text = "page 3 middle"
-        # max_co2_label.text = "page 3 bottom"
-        # temp_and_humidity_label.text = temp_and_humidity_text(temp, relh)
 
     for time_left in range(50,0,-1):
         
         if touch_A2.value:
+            page = co2_page
             board.DISPLAY.show(co2_page.group)
             continue
         elif touch_A3.value:
+            page = temperature_page
             board.DISPLAY.show(temperature_page.group)
             continue
 
