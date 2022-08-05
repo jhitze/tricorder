@@ -72,7 +72,7 @@ class Pages():
         self.display_width = display_width
         self.i2c = i2c
         self.pixels = pixels
-        self.co2_page = Co2Page(display.width, i2c, pixels[0])
+        self.co2_page = Co2Page(display.width, i2c, pixels)
         self.temperature_page = TemperaturePage(display.width)
         self.current_page = self.co2_page
         self.__update_display__()

@@ -6,13 +6,14 @@ from pages import *
 from pages.page import Page
 
 class Co2Page(Page):
-    def __init__(self, display_width, i2c, neopixel):
+    def __init__(self, display_width, i2c, neopixels):
         Page.__init__(self, display_width)
         self.max_co2 = 0
         self.co2 = 0
         self.temp = 0
         self.relh = 0.0
-        self.neopixel = neopixel
+        self.neopixels = neopixels
+        self.pixel = 0
         self.scd30 = adafruit_scd30.SCD30(i2c)
         self.scd30.measurement_interval = 5
         self.setup()
@@ -71,23 +72,27 @@ class Co2Page(Page):
         self.refresh_label.scale = defaultLabelScale
         self.group.append(self.refresh_label)
 
+    def set_pixel_color(self, color):
+        self.neopixels[self.pixel] = color
+        self.neopixels.show()
+    
     async def check_sensor_readiness(self):
-        self.neopixel = YELLOW
+        self.set_pixel_color(YELLOW)
         while self.scd30.data_available != 1:
             await asyncio.sleep(0.5)
-        self.neopixel = BLACK
+        self.set_pixel_color(BLACK)
 
     def update_values(self):
         try:
             self.co2 = self.scd30.CO2
             self.temp = self.scd30.temperature
             self.relh = self.scd30.relative_humidity
-            self.neopixel = GREEN
+            self.set_pixel_color(GREEN)
             print("Co2: " + str(self.co2))
             print("Temp: " + str(self.temp))
             print("Humidity: " + str(self.relh))
         except Exception:
-            self.neopixel = RED
+            self.neopixels[0] = RED
             raise
 
         self.update_co2(self.co2)
