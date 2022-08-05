@@ -79,10 +79,12 @@ class Co2Page(Page):
     async def check_sensor_readiness(self):
         self.set_pixel_color(YELLOW)
         while self.scd30.data_available != 1:
+            self.update_refresh_text("Waiting for sensor")
             await asyncio.sleep(0.5)
         self.set_pixel_color(BLACK)
 
     def update_values(self):
+        self.update_refresh_text("Reading from sensor")
         try:
             self.co2 = self.scd30.CO2
             self.temp = self.scd30.temperature
@@ -115,6 +117,9 @@ class Co2Page(Page):
     def update_temp_and_relh(self, temp, relh):
         self.temp_and_humidity_label.text = self.temp_and_humidity_text(temp, relh)
 
+    def update_refresh_text(self, text):
+        self.refresh_label.text = text
+
     def co2_text(self, co2):
         return "CO2: {:.0f} PPM".format(co2)
 
@@ -145,6 +150,3 @@ class Co2Page(Page):
 
     def temp_and_humidity_text(self, temp, humidity):
         return "T:{:.2f}°C  H:{:.0f}%".format(temp, humidity)
-
-    def refresh_text(self, time_left):
-        return "Refresh in {}".format(time_left)
