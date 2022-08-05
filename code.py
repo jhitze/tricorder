@@ -3,6 +3,7 @@ import board
 import neopixel
 import touchio
 import digitalio
+import asyncio
 from pages import RED, YELLOW, GREEN, BLACK
 from pages.temperature import TemperaturePage
 from pages.co2 import Co2Page
@@ -50,7 +51,6 @@ def color_chase(color, wait):
         time.sleep(wait)
         pixels.show()
 
-
 def rainbow_cycle(wait):
     for j in range(255):
         for i in range(num_pixels):
@@ -65,40 +65,57 @@ max_co2 = 0
 # Do something to show that it's loading.
 rainbow_cycle(0)
 
-co2_page = Co2Page(display.width, i2c)
-temperature_page = TemperaturePage(display.width)
 
 
+class Pages():
+    def __init__(self, display_width, i2c, pixels):
+        self.display_width = display_width
+        self.i2c = i2c
+        self.pixels = pixels
+        self.co2_page = Co2Page(display.width, i2c, pixels[0])
+        self.temperature_page = TemperaturePage(display.width)
+        self.current_page = self.co2_page
+        self.__update_display__()
+    
+    def show_co2_page(self):
+        self.current_page = self.co2_page
+        self.__update_display__()
+    
+    def show_temperature_page(self):
+        self.current_page = self.temperature_page
+        self.__update_display__()
+    
+    def __update_display__(self):
+        board.DISPLAY.show(self.current_page.group)
+    
 
-page = co2_page
-board.DISPLAY.show(co2_page.group)
+color_chase(BLACK, 0.01)
 
-while True:
-    color_chase(YELLOW, 0.01)
-    page.check_sensor_readiness()
-        
-
-    try:
-        page.update_values()
-        color_chase(GREEN, 0.01)
-        color_chase(BLACK, 0.01)
-    except:
-        color_chase(RED, 0.01)
-        color_chase(BLACK, 0.01)
-        pass
-
-    for time_left in range(50,0,-1):
-        
+async def user_input_checker(pages):
+    while True:
         if touch_A2.value:
-            page = co2_page
-            board.DISPLAY.show(co2_page.group)
-            continue
+            print("a2 was touched")
+            pages.show_co2_page()
         elif touch_A3.value:
-            page = temperature_page
-            board.DISPLAY.show(temperature_page.group)
-            continue
+            print("a3 was touched")
+            pages.show_temperature_page()
+        await asyncio.sleep(0)
 
-        co2_page.refresh_label.text = co2_page.refresh_text(time_left)
+async def refresh_page(pages):
+    while True:
+        print(pages.current_page)
+        await pages.current_page.check_sensor_readiness()
+        pages.current_page.update_values()
+        await asyncio.sleep(0)
 
-        time.sleep(0.01)
+async def main():
+    pages = Pages(display.width, i2c, pixels)
+    while True:
+        user_input_task = asyncio.create_task(user_input_checker(pages))
+        page_update_task = asyncio.create_task(refresh_page(pages))
         
+        # This will run forever, because user input task never exits.
+        await asyncio.gather(user_input_task, page_update_task)
+        
+
+asyncio.run(main())
