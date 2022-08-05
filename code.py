@@ -1,12 +1,11 @@
 import time
 import board
 import neopixel
+from pages.pages import Pages
 import touchio
 import digitalio
 import asyncio
-from pages import RED, YELLOW, GREEN, BLACK
-from pages.temperature import TemperaturePage
-from pages.co2 import Co2Page
+from pages import BLACK
 
 
 i2c = board.I2C()
@@ -66,29 +65,6 @@ max_co2 = 0
 rainbow_cycle(0)
 
 
-
-class Pages():
-    def __init__(self, display_width, i2c, pixels):
-        self.display_width = display_width
-        self.i2c = i2c
-        self.pixels = pixels
-        self.co2_page = Co2Page(display.width, i2c, pixels)
-        self.temperature_page = TemperaturePage(display.width)
-        self.current_page = self.co2_page
-        self.__update_display__()
-    
-    def show_co2_page(self):
-        self.current_page = self.co2_page
-        self.__update_display__()
-    
-    def show_temperature_page(self):
-        self.current_page = self.temperature_page
-        self.__update_display__()
-    
-    def __update_display__(self):
-        board.DISPLAY.show(self.current_page.group)
-    
-
 color_chase(BLACK, 0.01)
 
 async def user_input_checker(pages):
@@ -103,13 +79,12 @@ async def user_input_checker(pages):
 
 async def refresh_page(pages):
     while True:
-        print(pages.current_page)
         await pages.current_page.check_sensor_readiness()
         pages.current_page.update_values()
         await asyncio.sleep(0)
 
 async def main():
-    pages = Pages(display.width, i2c, pixels)
+    pages = Pages(i2c, pixels, board.DISPLAY)
     while True:
         user_input_task = asyncio.create_task(user_input_checker(pages))
         page_update_task = asyncio.create_task(refresh_page(pages))
