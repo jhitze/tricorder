@@ -1,3 +1,4 @@
+#! python
 import glob
 import shutil
 import os
@@ -8,7 +9,6 @@ files = [
 ]
 
 folders = [
-    "lib",
     "font",
     "pages"
 ]
