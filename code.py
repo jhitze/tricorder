@@ -3,19 +3,13 @@ import board
 import neopixel
 import touchio
 import digitalio
-import adafruit_scd30
-from pages import YELLOW, GREEN, BLACK
+from pages import RED, YELLOW, GREEN, BLACK
 from pages.temperature import TemperaturePage
 from pages.co2 import Co2Page
 
 
 i2c = board.I2C()
-scd30 = adafruit_scd30.SCD30(i2c)
-scd30.measurement_interval = 5
 display = board.DISPLAY
-
-color = 0x11bf08
-
 pixel_pin = board.NEOPIXEL
 num_pixels = 4
 
@@ -71,7 +65,7 @@ max_co2 = 0
 # Do something to show that it's loading.
 rainbow_cycle(0)
 
-co2_page = Co2Page(display.width)
+co2_page = Co2Page(display.width, i2c)
 temperature_page = TemperaturePage(display.width)
 
 board.DISPLAY.show(co2_page.group)
@@ -81,23 +75,16 @@ page = 0
 while True:
     if page == 0:
         color_chase(YELLOW, 0.01)
-        while scd30.data_available != 1:
-                time.sleep(0.200)
+        co2_page.check_sensor_readiness()
 
         try:
-            co2 = scd30.CO2
-            temp = scd30.temperature
-            relh = scd30.relative_humidity
+            co2_page.update_values()
             color_chase(GREEN, 0.01)
             color_chase(BLACK, 0.01)
-        except Exception:
+        except:
+            color_chase(RED, 0.01)
+            color_chase(BLACK, 0.01)
             pass
-        co2_page.update_co2(co2)
-        co2_page.update_temp_and_relh(temp, relh)
-
-        print("Co2: " + str(co2))
-        print("Temp: " + str(temp))
-        print("Humidity: " + str(relh))
 
     elif page == 1:
         # c02_label.text = "page 2 top"
