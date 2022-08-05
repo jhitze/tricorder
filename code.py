@@ -3,22 +3,13 @@ import board
 import neopixel
 import touchio
 import digitalio
-import displayio
-import terminalio
-from adafruit_display_text import label, wrap_text_to_lines
-from adafruit_display_shapes.rect import Rect
-import adafruit_scd30
+from pages import RED, YELLOW, GREEN, BLACK
+from pages.temperature import TemperaturePage
+from pages.co2 import Co2Page
 
 
 i2c = board.I2C()
-scd30 = adafruit_scd30.SCD30(i2c)
-scd30.measurement_interval = 5
 display = board.DISPLAY
-# Set text, font, and color
-#font = bitmap_font.load_font("/font/Helvetica-Bold-16.bdf")
-font = terminalio.FONT
-color = 0x11bf08
-
 pixel_pin = board.NEOPIXEL
 num_pixels = 4
 
@@ -68,180 +59,46 @@ def rainbow_cycle(wait):
         pixels.show()
         time.sleep(wait)
 
-def c02_text(c02):
-    return "CO2: {:.0f} PPM".format(c02)
-
-# Numbers from Kurtis Baute
-# https://www.youtube.com/watch?v=1Nh_vxpycEA
-# https://www.youtube.com/watch?v=PoKvPkwP4mM
-def cognitive_function_words(c02):
-    if(c02 > 39000):
-        return "Death Possible"
-    elif(c02 >= 10000):
-        return "Long Term Health Risk"
-    elif(c02 >= 2000):
-        return "Physical Problems Possible"
-    elif(c02 >= 1400):
-        return "50% Cognitive Decrease"
-    elif(c02 >= 1000):
-        return "15% Cognitive Decrease"
-    elif(c02 > 500):
-        return "Above outside levels"
-    else:
-        return "Outside level ~411ppm"
-
-def cognitive_function_text(co2):
-    return "\n".join(wrap_text_to_lines(cognitive_function_words(co2), 20))
-
-def max_co2_text(max_co2_level):
-    return "Max CO2: {:.0f} PPM".format(max_co2_level)
-
-def temp_and_humidity_text(temp, humidity):
-    return "T:{:.2f}°C  H:{:.0f}%".format(temp, humidity)
-
-def refresh_text(time_left):
-    return "Refresh in {}".format(time_left)
-
-RED = (255, 0, 0)
-YELLOW = (255, 150, 0)
-GREEN = (0, 255, 0)
-CYAN = (0, 255, 255)
-BLUE = (0, 0, 255)
-PURPLE = (180, 0, 255)
-BLACK = (0,0,0)
 
 max_co2 = 0
-defaultLabelScale = 2
-### new display idea
-BACKGROUND_COLOR = 0xFF0000
-FOREGROUND_COLOR = 0xFFFFFF
-BACKGROUND_TEXT_COLOR = 0xFFFFFF
-FOREGROUND_TEXT_COLOR = 0x000000
 
 # Do something to show that it's loading.
 rainbow_cycle(0)
-print("display width: " + str(display.width))
-splash = displayio.Group()
 
-# Draw a top rectangle
-rect = Rect(0, 0, 240, 140, fill=BACKGROUND_COLOR)
-splash.append(rect)
+co2_page = Co2Page(display.width, i2c)
+temperature_page = TemperaturePage(display.width)
 
-# Draw a Foreground Rectangle
-rect = Rect(0, 50, 240, 140, fill=FOREGROUND_COLOR)
-splash.append(rect)
 
-# Draw bottom rectangle
-rect = Rect(0, 190, 240, 140, fill=BACKGROUND_COLOR)
-splash.append(rect)
 
-# Setup and Center the header label
-header_label = label.Label(font, text="Cheap-o Tricorder")
-header_label.color = BACKGROUND_TEXT_COLOR
-header_label.scale = defaultLabelScale
-header_label.anchor_point = (0.5, 0)
-header_label.anchored_position = (display.width /2, 10)
-splash.append(header_label)
-
-# Setup and Center the c02 Label
-c02_label = label.Label(font, text=c02_text(9999.99), line_spacing=1)
-c02_label.anchor_point = (0.5, 0)
-c02_label.anchored_position = (display.width /2, 50)
-c02_label.color = FOREGROUND_TEXT_COLOR
-c02_label.scale = defaultLabelScale
-splash.append(c02_label)
-
-# Setup and Center the health Label
-cognitive_function_label = label.Label(font, text=cognitive_function_text(9999.99), line_spacing=.75)
-cognitive_function_label.anchor_point = (0.5, 0)
-cognitive_function_label.anchored_position = (display.width /2, 75)
-cognitive_function_label.color = FOREGROUND_TEXT_COLOR
-cognitive_function_label.scale = 2
-splash.append(cognitive_function_label)
-
-# Setup and Center the health Label
-max_co2_label = label.Label(font, text=max_co2_text(9999.99), line_spacing=1)
-max_co2_label.anchor_point = (0.5, 0)
-max_co2_label.anchored_position = (display.width /2, 125)
-max_co2_label.color = FOREGROUND_TEXT_COLOR
-max_co2_label.scale = defaultLabelScale
-splash.append(max_co2_label)
-
-# Setup and Center the temp and humidity Label
-temp_and_humidity_label = label.Label(font, text=temp_and_humidity_text(99.99,99), line_spacing=1)
-temp_and_humidity_label.anchor_point = (0.5, 0)
-temp_and_humidity_label.anchored_position = (display.width /2, 160)
-temp_and_humidity_label.color = FOREGROUND_TEXT_COLOR
-temp_and_humidity_label.scale = defaultLabelScale
-splash.append(temp_and_humidity_label)
-
-# Setup and Center the refresh Label
-refresh_label = label.Label(font, text=refresh_text(1), line_spacing=1)
-refresh_label.anchor_point = (0.5, 0)
-refresh_label.anchored_position = (display.width /2, 200)
-refresh_label.color = BACKGROUND_TEXT_COLOR
-refresh_label.scale = defaultLabelScale
-splash.append(refresh_label)
-
-board.DISPLAY.show(splash)
-
-page = 0
+page = co2_page
+board.DISPLAY.show(co2_page.group)
 
 while True:
-    if page == 0:
-        color_chase(YELLOW, 0.01)
-        while scd30.data_available != 1:
-                time.sleep(0.200)
-
-        try:
-            co2 = scd30.CO2
-            temp = scd30.temperature
-            relh = scd30.relative_humidity
-            color_chase(GREEN, 0.01)
-            color_chase(BLACK, 0.01)
-        except Exception:
-            pass
-        c02_label.text = c02_text(co2)
-
-        cognitive_function_label.text = cognitive_function_text(co2)
-
-        if(max_co2 < co2):
-            max_co2 = co2
+    color_chase(YELLOW, 0.01)
+    page.check_sensor_readiness()
         
-        if(max_co2_label.text != max_co2_text(max_co2)):
-            max_co2_label.text = max_co2_text(max_co2)
 
-        temp_and_humidity_label.text = temp_and_humidity_text(temp, relh)
-
-        print("Co2: " + str(co2))
-        print("Temp: " + str(temp))
-        print("Humidity: " + str(relh))
-
-    elif page == 1:
-        c02_label.text = "page 2 top"
-        cognitive_function_label.text = "page 2 middle"
-        max_co2_label.text = "page 2 bottom"
-        temp_and_humidity_label.text = temp_and_humidity_text(temp, relh)
-
-    elif page == 2:
-        c02_label.text = "page 3 top"
-        cognitive_function_label.text = "page 3 middle"
-        max_co2_label.text = "page 3 bottom"
-        temp_and_humidity_label.text = temp_and_humidity_text(temp, relh)
+    try:
+        page.update_values()
+        color_chase(GREEN, 0.01)
+        color_chase(BLACK, 0.01)
+    except:
+        color_chase(RED, 0.01)
+        color_chase(BLACK, 0.01)
+        pass
 
     for time_left in range(50,0,-1):
         
         if touch_A2.value:
-            page = 0
+            page = co2_page
+            board.DISPLAY.show(co2_page.group)
             continue
         elif touch_A3.value:
-            page = 1
-            continue
-        elif touch_A4.value:
-            page = 2
+            page = temperature_page
+            board.DISPLAY.show(temperature_page.group)
             continue
 
-        refresh_label.text = refresh_text(time_left)
+        co2_page.refresh_label.text = co2_page.refresh_text(time_left)
 
         time.sleep(0.01)
         

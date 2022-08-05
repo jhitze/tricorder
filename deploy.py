@@ -9,7 +9,8 @@ files = [
 
 folders = [
     "lib",
-    "font"
+    "font",
+    "pages"
 ]
 
 path = "."
