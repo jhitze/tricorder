@@ -20,5 +20,5 @@ class Page:
     async def check_sensor_readiness(self):
         pass
 
-    def update_values(self):
+    async def update_values(self):
         pass
