@@ -94,6 +94,7 @@ class VOCPage(Page):
             raise
 
         self.update_tvoc()
+        self.update_voc_interpretation()
         await asyncio.sleep(.5)
 
     def __update_temp_and_relh__(self):
@@ -112,8 +113,17 @@ class VOCPage(Page):
     def update_refresh_text(self, text):
         self.refresh_label.text = text
 
-    def cognitive_function_text(self, co2):
-        return "\n".join(wrap_text_to_lines(self.cognitive_function_words(co2), 20))
+    def update_voc_interpretation(self):
+        interpretation = self.interpretation()
+        self.cognitive_function_label.text = "\n".join(wrap_text_to_lines(interpretation, 20))
 
     def temp_and_humidity_text(self, temp, humidity):
         return "T:{:.2f}°C  H:{:.0f}%".format(temp, humidity)
+    
+    def interpretation(self):
+        if self.tvoc < 250:
+            return "The VOC contents in the air are low."
+        elif self.tvoc >= 250 and self.tvoc < 2000:
+            return "The VOC is not good."
+        elif self.tvoc >= 2000:
+            return "The VOC contents are very high leave now."
