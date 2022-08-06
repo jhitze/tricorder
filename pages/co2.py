@@ -83,7 +83,7 @@ class Co2Page(Page):
             await asyncio.sleep(0.5)
         self.set_pixel_color(BLACK)
 
-    def update_values(self):
+    async def update_values(self):
         self.update_refresh_text("Reading from sensor")
         try:
             self.co2 = self.scd30.CO2

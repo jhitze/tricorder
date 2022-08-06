@@ -35,12 +35,15 @@ async def user_input_checker(pages):
         elif touch_A3.value:
             print("a3 was touched")
             pages.show_temperature_page()
+        elif touch_A4.value:
+            print("a4 was touched")
+            pages.show_voc_page()
         await asyncio.sleep(0)
 
 async def refresh_page(pages):
     while True:
         await pages.current_page.check_sensor_readiness()
-        pages.current_page.update_values()
+        await pages.current_page.update_values()
         await asyncio.sleep(0)
 
 async def main():
