@@ -16,6 +16,12 @@ class Pages():
         self.current_page = self.sensor_page
         self.__update_display__()
     
+    def next(self):
+        self.current_page.next()
+    
+    def previous(self):
+        self.current_page.previous()
+    
     def __update_display__(self):
         print("Page loaded:", self.current_page)
         self.display.show(self.current_page.group)

@@ -18,9 +18,7 @@ class Co2Sensor(Sensor):
 
     async def check_sensor_readiness(self):
         while self.scd30.data_available != 1:
-            self.__is_waiting = True
             await asyncio.sleep(0.5)
-        self.__is_waiting = False
 
     async def update_values(self):
         self.co2 = self.scd30.CO2

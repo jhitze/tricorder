@@ -2,11 +2,10 @@
 
 class Sensor():
     def __init__(self):
-        self.__is_waiting = True
         pass
 
-    async def is_waiting(self):
-        return self.__is_waiting
+    def setup(self):
+        pass
 
     async def check_sensor_readiness(self):
         pass

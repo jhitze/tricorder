@@ -3,6 +3,7 @@ from adafruit_display_text import label
 from adafruit_display_shapes.rect import Rect
 from pages import *
 from pages.page import Page
+from sensors.air_particulate_sensor import AirParticulateSensor
 from sensors.co2_sensor import Co2Sensor
 
 class SensorPage(Page):
@@ -12,7 +13,7 @@ class SensorPage(Page):
         self.neopixels = neopixels
         self.pixel = 0
         self.current_sensor = None
-        
+        self.all_sensors = []
         self.setup_areas()
         self.setup_header()
         self.create_sensors()
@@ -41,8 +42,17 @@ class SensorPage(Page):
     def create_sensors(self):
         self.co2Sensor = Co2Sensor(self.i2c)
         self.co2Sensor.setup()
-        self.current_sensor = self.co2Sensor
-
+        self.all_sensors.append(self.co2Sensor)
+        self.airParticulateSensor = AirParticulateSensor(self.i2c)
+        self.airParticulateSensor.setup()
+        self.all_sensors.append(self.airParticulateSensor)
+        self.current_sensor = self.all_sensors[0]
+    
+    def next(self):
+        self.current_sensor = self.all_sensors[1]
+    
+    def previous(self):
+        self.current_sensor = self.all_sensors[0]
 
     async def run(self):
         while True:
@@ -52,6 +62,7 @@ class SensorPage(Page):
                 await self.current_sensor.update_values()
                 self.set_pixel_color(GREEN)
                 self.update_text(self.current_sensor.text())
+                await asyncio.sleep(0.5)
             except Exception as e:
                 self.set_pixel_color(RED)
                 print("exception:", e)

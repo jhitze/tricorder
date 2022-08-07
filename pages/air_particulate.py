@@ -4,7 +4,7 @@ from adafruit_display_shapes.rect import Rect
 from pages import BACKGROUND_COLOR, BLACK, FOREGROUND_COLOR, FOREGROUND_TEXT_COLOR, BACKGROUND_TEXT_COLOR, GREEN, RED, YELLOW, font, defaultLabelScale
 
 from pages.page import Page
-from adafruit_pm25.i2c import PM25_I2C
+
 
 class AirParticulatePage(Page):
     def __init__(self, display_width, i2c, neopixels):
@@ -64,15 +64,15 @@ class AirParticulatePage(Page):
     
     async def check_sensor_readiness(self):
         self.set_pixel_color(YELLOW)
-        # try:
-        #     while self.sgp30.eCO2 == 0:
-        #         self.update_refresh_text("Sensor Warming Up")
-        #         print("warming_voc_up", self.warmed_up, self.sgp30.TVOC)
-        #         await asyncio.sleep(0.5)
-        # except Exception:
-        #     self.warmed_up = False
-        #     print("exception", Exception)
-        # self.warmed_up = True
+        try:
+            while self.sgp30.eCO2 == 0:
+                self.update_refresh_text("Sensor Warming Up")
+                print("warming_voc_up", self.warmed_up, self.sgp30.TVOC)
+                await asyncio.sleep(0.5)
+        except Exception:
+            self.warmed_up = False
+            print("exception", Exception)
+        self.warmed_up = True
         self.set_pixel_color(BLACK)
 
     async def update_values(self):

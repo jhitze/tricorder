@@ -42,10 +42,10 @@ async def user_input_checker(pages):
     while True:
         if touch_A2.value:
             print("a2 was touched")
-            pages.show_sensor_page()
+            pages.previous()
         elif touch_A3.value:
             print("a3 was touched")
-            # pages.show_aq_page()
+            pages.next()
         elif touch_A4.value:
             print("a4 was touched")
             # pages.show_voc_page()
