@@ -9,3 +9,4 @@ adafruit_display_shapes==2.5.1
 adafruit_display_text==2.22.7
 adafruit_register==1.9.10
 asyncio==0.5.12
+adafruit_pm25==2.1.9

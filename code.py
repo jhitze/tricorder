@@ -1,16 +1,27 @@
+import gc
+print( "Before imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import board
+print( "After board imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import neopixel
+print( "After nexopixel imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 from pages.pages import Pages
+print( "After pages imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import touchio
+print( "After touchio imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import digitalio
+print( "After digitalio imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import asyncio
 
+
+print( "After asyncio in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
 i2c = board.I2C()
 display = board.DISPLAY
 pixel_pin = board.NEOPIXEL
 num_pixels = 4
 pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.1, auto_write=False)
+
+print( "After board stuff done in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
 # Perform a couple extra steps for the HalloWing M4
 try:
@@ -34,7 +45,7 @@ async def user_input_checker(pages):
             pages.show_co2_page()
         elif touch_A3.value:
             print("a3 was touched")
-            pages.show_temperature_page()
+            pages.show_aq_page()
         elif touch_A4.value:
             print("a4 was touched")
             pages.show_voc_page()
