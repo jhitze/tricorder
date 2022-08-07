@@ -3,18 +3,19 @@ from adafruit_display_text import label
 from adafruit_display_shapes.rect import Rect
 from pages import *
 from pages.page import Page
+from sensors.co2_sensor import Co2Sensor
 
 class SensorPage(Page):
-    def __init__(self, display_width, neopixels):
+    def __init__(self, display_width, i2c, neopixels):
         Page.__init__(self, display_width)
+        self.i2c = i2c
         self.neopixels = neopixels
         self.pixel = 0
-        self.current_sensor_index = 0
-        self.sensors = []
+        self.current_sensor = None
         
         self.setup_areas()
         self.setup_header()
-        self.setup_sensors()
+        self.create_sensors()
 
     def setup_areas(self):
         # Draw a top rectangle
@@ -37,22 +38,25 @@ class SensorPage(Page):
         self.neopixels[self.pixel] = color
         self.neopixels.show()
     
-    def setup_sensors():
-        pass
+    def create_sensors(self):
+        self.co2Sensor = Co2Sensor(self.i2c)
+        self.co2Sensor.setup()
+        self.current_sensor = self.co2Sensor
+
 
     async def run(self):
         while True:
-            current_sensor = self.sensors[self.current_sensor_index]
             try:
                 self.set_pixel_color(YELLOW)
-                await current_sensor.check_sensor_readiness()
-                await current_sensor.update_values()
+                await self.current_sensor.check_sensor_readiness()
+                await self.current_sensor.update_values()
                 self.set_pixel_color(GREEN)
-                self.update_text(current_sensor.text())
-            except:
+                self.update_text(self.current_sensor.text())
+            except Exception as e:
                 self.set_pixel_color(RED)
+                print("exception:", e)
                 await asyncio.sleep(.5)
-                pass
+                raise
     
 
     def update_text(self, text):

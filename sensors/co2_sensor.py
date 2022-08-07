@@ -29,12 +29,12 @@ class Co2Sensor(Sensor):
     
     def text(self):
         lines = []
-        lines.append(self.co2_text())
-        for line in self.cognitive_function_text():
+        lines.append(self.co2_text(self.co2))
+        for line in self.cognitive_function_text(self.co2):
             lines.append(line)
-        lines.append(self.max_co2_text())
-        lines.append(self.temp_and_humidity_text())
-        text = "/n".join(lines)
+        lines.append(self.max_co2_text(self.co2))
+        lines.append(self.temp_and_humidity_text(self.temp, self.relh))
+        text = "\n".join(lines)
         return text
     
     def co2_text(self, co2):

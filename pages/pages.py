@@ -1,15 +1,5 @@
 import gc
-
 from pages.sensor_page import SensorPage
-print( "Before pages.co2 in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
-from pages.co2 import Co2Page
-print( "After pages.co2 in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
-# from pages.temperature import TemperaturePage
-from pages.voc import VOCPage
-print( "After pages.voc in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
-from pages.air_particulate import AirParticulatePage
-print( "After pages.air_particulate in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
-import gc
 
 class Pages():
     def __init__(self, i2c, pixels, display):
@@ -23,7 +13,7 @@ class Pages():
         self.__update_display__()
     
     def show_sensor_page(self):
-        self.current_page = self.show_sensor_page
+        self.current_page = self.sensor_page
         self.__update_display__()
     
     def __update_display__(self):
