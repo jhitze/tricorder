@@ -10,7 +10,8 @@ files = [
 
 folders = [
     "font",
-    "pages"
+    "pages",
+    "sensors"
 ]
 
 path = "."
