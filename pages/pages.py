@@ -1,4 +1,6 @@
 import gc
+
+from pages.sensor_page import SensorPage
 print( "Before pages.co2 in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 from pages.co2 import Co2Page
 print( "After pages.co2 in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
@@ -16,30 +18,12 @@ class Pages():
         self.display = display
         self.i2c = i2c
         self.pixels = pixels
-        self.co2_page = Co2Page(self.display.width, self.i2c, self.pixels)
-        print( "After Co2Page Loaded Available memory: {} bytes".format(gc.mem_free()) )
-        # self.temperature_page = TemperaturePage(self.display.width)
-        self.voc_page = VOCPage(self.display.width, self.i2c, self.pixels, self.co2_page)
-        print( "After VOCPage Loaded Available memory: {} bytes".format(gc.mem_free()) )
-        self.aq_page = AirParticulatePage(self.display.width, self.i2c, self.pixels)
-        print( "After AirParticulatePage Loaded Available memory: {} bytes".format(gc.mem_free()) )
-        self.current_page = self.co2_page
+        self.sensor_page = SensorPage(self.display.width, self.i2c, self.pixels)
+        self.current_page = self.sensor_page
         self.__update_display__()
     
-    def show_co2_page(self):
-        self.current_page = self.co2_page
-        self.__update_display__()
-    
-    def show_temperature_page(self):
-        self.current_page = self.temperature_page
-        self.__update_display__()
-    
-    def show_aq_page(self):
-        self.current_page = self.aq_page
-        self.__update_display__()
-
-    def show_voc_page(self):
-        self.current_page = self.voc_page
+    def show_sensor_page(self):
+        self.current_page = self.show_sensor_page
         self.__update_display__()
     
     def __update_display__(self):

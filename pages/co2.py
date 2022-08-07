@@ -1,7 +1,7 @@
 import asyncio
-from adafruit_display_text import label, wrap_text_to_lines
+from adafruit_display_text import label
 from adafruit_display_shapes.rect import Rect
-import adafruit_scd30
+
 from pages import *
 from pages.page import Page
 
@@ -14,8 +14,7 @@ class Co2Page(Page):
         self.relh = 0.0
         self.neopixels = neopixels
         self.pixel = 0
-        self.scd30 = adafruit_scd30.SCD30(i2c)
-        self.scd30.measurement_interval = 5
+        
         self.setup()
         self.setup_header()
 
@@ -120,33 +119,6 @@ class Co2Page(Page):
     def update_refresh_text(self, text):
         self.refresh_label.text = text
 
-    def co2_text(self, co2):
-        return "CO2: {:.0f} PPM".format(co2)
+    
 
-    # Numbers from Kurtis Baute
-    # https://www.youtube.com/watch?v=1Nh_vxpycEA
-    # https://www.youtube.com/watch?v=PoKvPkwP4mM
-    def cognitive_function_words(self, c02):
-        if(c02 > 39000):
-            return "Death Possible"
-        elif(c02 >= 10000):
-            return "Long Term Health Risk"
-        elif(c02 >= 2000):
-            return "Physical Problems Possible"
-        elif(c02 >= 1400):
-            return "50% Cognitive Decrease"
-        elif(c02 >= 1000):
-            return "15% Cognitive Decrease"
-        elif(c02 > 500):
-            return "Above outside levels"
-        else:
-            return "Outside level ~411ppm"
-
-    def cognitive_function_text(self, co2):
-        return "\n".join(wrap_text_to_lines(self.cognitive_function_words(co2), 20))
-
-    def max_co2_text(self, max_co2_level):
-        return "Max CO2: {:.0f} PPM".format(max_co2_level)
-
-    def temp_and_humidity_text(self, temp, humidity):
-        return "T:{:.2f}°C  H:{:.0f}%".format(temp, humidity)
+    
