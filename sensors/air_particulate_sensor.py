@@ -3,7 +3,6 @@ from adafruit_pm25.i2c import PM25_I2C
 
 class AirParticulateSensor():
     def __init__(self, i2c):
-        self.__is_waiting = True
         self.i2c = i2c
         self.reset_pin = None
         self.pm2p5 = 0
@@ -13,11 +12,8 @@ class AirParticulateSensor():
     def setup(self):
         self.pm25Sensor = PM25_I2C(self.i2c, self.reset_pin)
 
-    async def is_waiting(self):
-        return self.__is_waiting
-
     async def check_sensor_readiness(self):
-        self.warmed_up = True
+        pass
 
     async def update_values(self):
         self.aqdata = self.pm25Sensor.read()
@@ -32,6 +28,7 @@ class AirParticulateSensor():
         lines.append(self.pm2p5_text(self.pm2p5))
         lines.append(self.pm1p0_text(self.pm1p0))
         lines.append(self.pm10_text(self.pm10))
+        lines.append(self.interpretation())
         text = "\n".join(lines)
         return text
 

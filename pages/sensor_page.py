@@ -62,6 +62,7 @@ class SensorPage(Page):
                 await self.current_sensor.update_values()
                 self.set_pixel_color(GREEN)
                 self.update_text(self.current_sensor.text())
+                self.set_pixel_color(BLACK)
                 await asyncio.sleep(0.5)
             except Exception as e:
                 self.set_pixel_color(RED)

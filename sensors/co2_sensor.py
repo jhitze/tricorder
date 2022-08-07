@@ -24,6 +24,9 @@ class Co2Sensor(Sensor):
         self.co2 = self.scd30.CO2
         self.temp = self.scd30.temperature
         self.relh = self.scd30.relative_humidity
+        print("co2: ", self.co2)
+        print("temp: ", self.temp)
+        print("relh: ", self.relh)
     
     def text(self):
         lines = []
