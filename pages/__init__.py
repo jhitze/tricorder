@@ -1,4 +1,7 @@
-import terminalio
+import gc
+print( "Before terminialio in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
+from terminalio import FONT
+print( "after terminialio in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
 RED = (255, 0, 0)
 YELLOW = (255, 150, 0)
@@ -15,6 +18,6 @@ FOREGROUND_COLOR = 0xFFFFFF
 BACKGROUND_TEXT_COLOR = 0xFFFFFF
 FOREGROUND_TEXT_COLOR = 0x000000
 
-font = terminalio.FONT
+font = FONT
 
 defaultLabelScale = 2
