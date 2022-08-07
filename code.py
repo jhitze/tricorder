@@ -1,16 +1,11 @@
 import gc
-print( "Before imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import board
-print( "After board imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import neopixel
-print( "After nexopixel imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 from pages.pages import Pages
-print( "After pages imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import touchio
-print( "After touchio imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import digitalio
-print( "After digitalio imports in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 import asyncio
+from adafruit_debouncer import Debouncer
 
 
 print( "After asyncio in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
@@ -33,13 +28,15 @@ try:
 except AttributeError:
     pass
 
-touch_A2 = touchio.TouchIn(board.TOUCH1)
-touch_A3 = touchio.TouchIn(board.TOUCH2)
-touch_A4 = touchio.TouchIn(board.TOUCH3)
-touch_A5 = touchio.TouchIn(board.TOUCH4)
+touch_A2 = Debouncer(touchio.TouchIn(board.TOUCH1), interval=0.2)
+touch_A3 = Debouncer(touchio.TouchIn(board.TOUCH2), interval=0.2)
+touch_A4 = Debouncer(touchio.TouchIn(board.TOUCH3), interval=0.2)
+touch_A5 = Debouncer(touchio.TouchIn(board.TOUCH4), interval=0.2)
 
 async def user_input_checker(pages):
     while True:
+        touch_A2.update()
+        touch_A3.update()
         if touch_A2.value:
             print("a2 was touched")
             pages.previous()
