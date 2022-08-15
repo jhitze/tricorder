@@ -4,6 +4,7 @@ from adafruit_display_shapes.rect import Rect
 from pages import *
 from pages.page import Page
 from sensors.air_particulate_sensor import AirParticulateSensor
+from sensors.barometer_sensor import BarometerSensor
 from sensors.co2_sensor import Co2Sensor
 from sensors.voc_sensor import VOCSensor
 
@@ -53,6 +54,10 @@ class SensorPage(Page):
         self.vocSensor = VOCSensor(self.i2c, self.co2Sensor)
         self.vocSensor.setup()
         self.all_sensors.append(self.vocSensor)
+
+        self.barometerSensor = BarometerSensor(self.i2c)
+        self.barometerSensor.setup()
+        self.all_sensors.append(self.barometerSensor)
 
         self.current_sensor = self.all_sensors[0]
     
