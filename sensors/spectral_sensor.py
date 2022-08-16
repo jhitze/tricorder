@@ -44,8 +44,6 @@ class SpectralSensor():
         lines.append(self.top_wavelength_text())
         lines.append("")
         lines.append("")
-        # for line in self.interpretation_text(self.pressure):
-        #     lines.append(line)
         text = "\n".join(lines)
         return text
 
@@ -76,13 +74,3 @@ class SpectralSensor():
             "680nm/Red" : self.red_680nm
         }
         return allwaves
-    
-    def interpretation(self, pressure):
-        if pressure < 1009.144:
-            return "Low Pressure/ Rainy Weather"
-        elif pressure >= 1009.144 and pressure < 1022.689:
-            return "Normal Pressure/ Steady Weather"
-        elif pressure >= 1022.689:
-            return "High Pressure/ Calm Weather"
-    
-    
