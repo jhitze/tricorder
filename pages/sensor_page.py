@@ -6,6 +6,7 @@ from pages.page import Page
 from sensors.air_particulate_sensor import AirParticulateSensor
 from sensors.barometer_sensor import BarometerSensor
 from sensors.co2_sensor import Co2Sensor
+from sensors.spectral_sensor import SpectralSensor
 from sensors.voc_sensor import VOCSensor
 
 class SensorPage(Page):
@@ -59,7 +60,11 @@ class SensorPage(Page):
         self.barometerSensor.setup()
         self.all_sensors.append(self.barometerSensor)
 
-        self.current_sensor = self.all_sensors[0]
+        self.spectralSensor = SpectralSensor(self.i2c)
+        self.spectralSensor.setup()
+        self.all_sensors.append(self.spectralSensor)
+
+        self.current_sensor = self.all_sensors[4]
     
     def next(self):
         self.current_sensor_index = self.current_sensor_index + 1
