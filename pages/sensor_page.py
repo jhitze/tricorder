@@ -8,6 +8,8 @@ from sensors.barometer_sensor import BarometerSensor
 from sensors.co2_sensor import Co2Sensor
 from sensors.spectral_sensor import SpectralSensor
 from sensors.voc_sensor import VOCSensor
+from views.sensors.spectral_view import SpectralView
+import displayio
 
 class SensorPage(Page):
     def __init__(self, display_width, i2c, neopixels):
@@ -17,6 +19,8 @@ class SensorPage(Page):
         self.pixel = 0
         self.current_sensor = None
         self.current_sensor_index = 0
+        self.display_group = displayio.Group()
+        self.default_view_group = displayio.Group()
         self.all_sensors = []
         self.setup_areas()
         self.setup_header()
@@ -37,7 +41,10 @@ class SensorPage(Page):
         self.sensor_text_label.anchored_position = (self.display_width /2, 50)
         self.sensor_text_label.color = FOREGROUND_TEXT_COLOR
         self.sensor_text_label.scale = defaultLabelScale
-        self.group.append(self.sensor_text_label)
+        self.default_view_group.append(self.sensor_text_label)
+        
+        self.display_group.append(self.default_view_group)
+        self.group.append(self.display_group)
 
     def set_pixel_color(self, color):
         self.neopixels[self.pixel] = color
@@ -64,7 +71,7 @@ class SensorPage(Page):
         self.spectralSensor.setup()
         self.all_sensors.append(self.spectralSensor)
 
-        self.current_sensor = self.all_sensors[4]
+        self.current_sensor = self.all_sensors[0]
     
     def next(self):
         self.current_sensor_index = self.current_sensor_index + 1
@@ -89,7 +96,16 @@ class SensorPage(Page):
                 await self.current_sensor.check_sensor_readiness()
                 await self.current_sensor.update_values()
                 self.set_pixel_color(GREEN)
-                self.update_text(self.current_sensor.text())
+                if type(self.current_sensor) == SpectralSensor:
+                    print("Using SpectralView")
+                    group = SpectralView(self.current_sensor, self.display_width, 0,50)
+                else:
+                    print("Using DefaultView")
+                    group = self.default_view_group
+                    self.update_text(self.current_sensor.text())
+                
+                self.display_group.pop()
+                self.display_group.append(group)
                 self.set_pixel_color(BLACK)
                 await asyncio.sleep(0.5)
             except Exception as e:
