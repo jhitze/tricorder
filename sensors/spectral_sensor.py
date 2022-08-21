@@ -16,12 +16,16 @@ class SpectralSensor():
 
     def setup(self):
         self.sensor = AS7341(self.i2c)
-
+        self.sensor.led_current = 25
+        self.sensor.led = False
 
     async def check_sensor_readiness(self):
         pass
 
     async def update_values(self):
+        
+        print("enabling led to read colors")
+        self.sensor.led = True
         self.violet_415nm  = self.sensor.channel_415nm
         self.indigo_445nm  = self.sensor.channel_445nm
         self.blue_480nm    = self.sensor.channel_480nm
@@ -30,6 +34,8 @@ class SpectralSensor():
         self.yellow_590nm  = self.sensor.channel_590nm
         self.orange_630nm  = self.sensor.channel_630nm
         self.red_680nm     = self.sensor.channel_680nm
+        print("disabling led")
+        self.sensor.led = False
         print("415nm/Violet  %s" % self.violet_415nm)
         print("445nm/Indigo %s" % self.indigo_445nm)
         print("480nm/Blue   %s" % self.blue_480nm)
@@ -44,8 +50,6 @@ class SpectralSensor():
         lines.append(self.top_wavelength_text())
         lines.append("")
         lines.append("")
-        # for line in self.interpretation_text(self.pressure):
-        #     lines.append(line)
         text = "\n".join(lines)
         return text
 
@@ -76,13 +80,3 @@ class SpectralSensor():
             "680nm/Red" : self.red_680nm
         }
         return allwaves
-    
-    def interpretation(self, pressure):
-        if pressure < 1009.144:
-            return "Low Pressure/ Rainy Weather"
-        elif pressure >= 1009.144 and pressure < 1022.689:
-            return "Normal Pressure/ Steady Weather"
-        elif pressure >= 1022.689:
-            return "High Pressure/ Calm Weather"
-    
-    
