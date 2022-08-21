@@ -6,6 +6,7 @@ class AirParticulateSensor():
         self.i2c = i2c
         self.reset_pin = None
         self.pm2p5 = 0
+        self.max_pm2p5 = 0
         self.pm1p0 = 0
         self.pm10 = 0
 
@@ -21,6 +22,8 @@ class AirParticulateSensor():
         self.pm2p5 = self.aqdata["pm25 standard"]
         self.pm1p0 = self.aqdata["pm10 standard"]
         self.pm10 = self.aqdata["pm100 standard"]
+        if self.pm2p5 > self.max_pm2p5:
+            self.max_pm2p5 = self.pm2p5
         await asyncio.sleep(0.5)
 
     def text(self):
@@ -28,7 +31,7 @@ class AirParticulateSensor():
         lines.append(self.pm2p5_text(self.pm2p5))
         lines.append(self.pm1p0_text(self.pm1p0))
         lines.append(self.pm10_text(self.pm10))
-        lines.append(self.interpretation())
+        lines.append(self.interpretation(self.max_pm2p5))
         text = "\n".join(lines)
         return text
 
@@ -41,5 +44,10 @@ class AirParticulateSensor():
     def pm10_text(self, pm10):
         return "PM  10: {:.0f}".format(pm10)
     
-    def interpretation(self):
-        return "Needs interpreting"
+    def interpretation(self, pm2p5):
+        if(pm2p5 > 12):
+            return "PM2.5 is too high!"
+        elif(self.max_pm2p5 > 35):
+            return "You need to leave"
+        else:
+            return "Seems Okay"
