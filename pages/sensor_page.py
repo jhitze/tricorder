@@ -8,6 +8,7 @@ from sensors.barometer_sensor import BarometerSensor
 from sensors.co2_sensor import Co2Sensor
 from sensors.spectral_sensor import SpectralSensor
 from sensors.voc_sensor import VOCSensor
+from sensors.nine_axis_sensor import NineAxisSensor
 from views.sensors.spectral_view import SpectralView
 import displayio
 
@@ -71,7 +72,11 @@ class SensorPage(Page):
         self.spectralSensor.setup()
         self.all_sensors.append(self.spectralSensor)
 
-        self.current_sensor = self.all_sensors[0]
+        self.nineAxisSensor = NineAxisSensor(self.i2c)
+        self.nineAxisSensor.setup()
+        self.all_sensors.append(self.nineAxisSensor)
+
+        self.current_sensor = self.all_sensors[5]
     
     def next(self):
         self.current_sensor_index = self.current_sensor_index + 1
