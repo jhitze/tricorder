@@ -7,6 +7,7 @@ from sensors.air_particulate_sensor import AirParticulateSensor
 from sensors.barometer_sensor import BarometerSensor
 from sensors.co2_sensor import Co2Sensor
 from sensors.spectral_sensor import SpectralSensor
+from sensors.uv_sensor import UVSensor
 from sensors.voc_sensor import VOCSensor
 from sensors.nine_axis_sensor import NineAxisSensor
 from views.sensors.spectral_view import SpectralView
@@ -61,7 +62,11 @@ class SensorPage(Page):
         self.all_sensors.append(self.airParticulateSensor)
 
         self.vocSensor = VOCSensor(self.i2c, self.co2Sensor)
-        self.vocSensor.setup()
+        try:
+            self.vocSensor.setup()
+        except Exception as ex:
+            print("VOC sensor failed to setup. - {0}".format(ex))
+        
         self.all_sensors.append(self.vocSensor)
 
         self.barometerSensor = BarometerSensor(self.i2c)
@@ -75,6 +80,10 @@ class SensorPage(Page):
         self.nineAxisSensor = NineAxisSensor(self.i2c)
         self.nineAxisSensor.setup()
         self.all_sensors.append(self.nineAxisSensor)
+
+        self.uvSensor = UVSensor(self.i2c)
+        self.uvSensor.setup()
+        self.all_sensors.append(self.uvSensor)
 
         self.current_sensor = self.all_sensors[5]
     

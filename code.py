@@ -5,13 +5,14 @@ from pages.pages import Pages
 import touchio
 import digitalio
 import asyncio
+import busio
 from adafruit_debouncer import Debouncer
 from digitalio import DigitalInOut, Direction
 
 
 print( "After asyncio in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
-i2c = board.I2C()
+i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
 display = board.DISPLAY
 pixel_pin = board.NEOPIXEL
 button_pin = board.D10
