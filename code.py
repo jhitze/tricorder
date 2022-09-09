@@ -6,6 +6,7 @@ import touchio
 import digitalio
 import asyncio
 from adafruit_debouncer import Debouncer
+from digitalio import DigitalInOut, Direction
 
 
 print( "After asyncio in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
@@ -13,6 +14,7 @@ print( "After asyncio in Code Loaded Available memory: {} bytes".format(gc.mem_f
 i2c = board.I2C()
 display = board.DISPLAY
 pixel_pin = board.NEOPIXEL
+button_pin = board.D10
 num_pixels = 4
 pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.1, auto_write=False)
 
@@ -32,17 +34,21 @@ touch_A2 = Debouncer(touchio.TouchIn(board.TOUCH1), interval=0.2)
 touch_A3 = Debouncer(touchio.TouchIn(board.TOUCH2), interval=0.2)
 touch_A4 = Debouncer(touchio.TouchIn(board.TOUCH3), interval=0.2)
 touch_A5 = Debouncer(touchio.TouchIn(board.TOUCH4), interval=0.2)
+next_button = DigitalInOut(button_pin)
+next_button.direction = Direction.INPUT
 
 async def user_input_checker(pages):
     while True:
         touch_A2.update()
         touch_A3.update()
+
         if touch_A2.value:
             print("a2 was touched")
             pages.previous()
-        elif touch_A3.value:
-            print("a3 was touched")
+        elif not next_button.value:
+            print("next button was pressed")
             pages.next()
+            await asyncio.sleep(.5)
         elif touch_A4.value:
             print("a4 was touched")
             # pages.show_voc_page()
