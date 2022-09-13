@@ -41,7 +41,10 @@ class VOCSensor(Sensor):
             self.temp = self.co2_page.temp
             self.relh = self.co2_page.relh
             print("Seting tvoc sensor's temp and hum:", self.temp, self.relh)
-            self.sgp30.set_iaq_relative_humidity(celsius=self.temp, relative_humidity=self.relh)
+            try:
+                self.sgp30.set_iaq_relative_humidity(celsius=self.temp, relative_humidity=self.relh)
+            except OSError as ex:
+                print("Error updating sgp30: {}".format(ex))
 
     def text(self):
         lines = []
