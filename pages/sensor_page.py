@@ -85,7 +85,7 @@ class SensorPage(Page):
         self.uvSensor.setup()
         self.all_sensors.append(self.uvSensor)
 
-        self.current_sensor = self.all_sensors[5]
+        self.current_sensor = self.all_sensors[0]
     
     def next(self):
         self.current_sensor_index = self.current_sensor_index + 1
@@ -102,6 +102,21 @@ class SensorPage(Page):
         
         print("Sensor Index: ", self.current_sensor_index)
         self.current_sensor = self.all_sensors[self.current_sensor_index]
+
+    def sensor_count(self):
+        return len(self.all_sensors)
+    
+    def goto_page(self, number):
+        page_index = number
+        if page_index < 0:
+            page_index = 0
+        elif page_index >= self.sensor_count():
+            page_index = self.sensor_count() - 1
+        
+        self.current_sensor = self.all_sensors[page_index]
+        print("Sensor set page to #{}".format(page_index))
+
+        return page_index
 
     async def run(self):
         while True:

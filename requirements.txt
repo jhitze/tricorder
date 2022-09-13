@@ -16,3 +16,4 @@ adafruit_register==1.9.10
 asyncio==0.5.12
 adafruit_pm25==2.1.9
 adafruit_lsm6ds==4.5.3
+adafruit_seesaw==1.11.6

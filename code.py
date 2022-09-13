@@ -2,24 +2,16 @@ import gc
 import board
 import neopixel
 from pages.pages import Pages
-import touchio
 import digitalio
 import asyncio
 import busio
-from adafruit_debouncer import Debouncer
 from digitalio import DigitalInOut, Direction
+from adafruit_seesaw import seesaw, rotaryio, digitalio
 
 
-print( "After asyncio in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
+print( "After last load in Code.py Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
-i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
-display = board.DISPLAY
-pixel_pin = board.NEOPIXEL
-button_pin = board.D10
-num_pixels = 4
-pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.1, auto_write=False)
 
-print( "After board stuff done in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
 # Perform a couple extra steps for the HalloWing M4
 try:
@@ -31,28 +23,45 @@ try:
 except AttributeError:
     pass
 
-touch_A2 = Debouncer(touchio.TouchIn(board.TOUCH1), interval=0.2)
-touch_A3 = Debouncer(touchio.TouchIn(board.TOUCH2), interval=0.2)
-touch_A4 = Debouncer(touchio.TouchIn(board.TOUCH3), interval=0.2)
-touch_A5 = Debouncer(touchio.TouchIn(board.TOUCH4), interval=0.2)
+i2c = busio.I2C(board.SCL, board.SDA, frequency=100000, timeout = 1000)
+display = board.DISPLAY
+pixel_pin = board.NEOPIXEL
+button_pin = board.D10
+num_pixels = 4
+pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.1, auto_write=False)
+
 next_button = DigitalInOut(button_pin)
 next_button.direction = Direction.INPUT
 
-async def user_input_checker(pages):
-    while True:
-        touch_A2.update()
-        touch_A3.update()
+seesaw = seesaw.Seesaw(i2c, 0x36)
+seesaw.pin_mode(24, seesaw.INPUT_PULLUP)
+button = digitalio.DigitalIO(seesaw, 24)
 
-        if touch_A2.value:
-            print("a2 was touched")
-            pages.previous()
-        elif not next_button.value:
-            print("next button was pressed")
-            pages.next()
-            await asyncio.sleep(.5)
-        elif touch_A4.value:
-            print("a4 was touched")
-            # pages.show_voc_page()
+
+encoder = rotaryio.IncrementalEncoder(seesaw)
+
+async def user_input_checker(pages):
+    last_position = None
+    button_held = False
+    while True:
+        position = encoder.position
+        if position != last_position:
+            last_position = position
+            print("Position: {}".format(position))
+            page_set_to = pages.goto_page(position)
+            print("Page was set to: {}".format(page_set_to))
+            encoder.position = page_set_to
+
+
+        elif not button.value and not button_held:
+            button_held = True
+            print("Button pressed")
+            
+
+        elif button.value and button_held:
+            button_held = False
+            print("Button released")
+
         await asyncio.sleep(0)
 
 async def refresh_page(pages):
@@ -62,6 +71,7 @@ async def refresh_page(pages):
 
 async def main():
     pages = Pages(i2c, pixels, board.DISPLAY)
+
     while True:
         user_input_task = asyncio.create_task(user_input_checker(pages))
         page_update_task = asyncio.create_task(refresh_page(pages))

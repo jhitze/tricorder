@@ -22,6 +22,9 @@ class Pages():
     def previous(self):
         self.current_page.previous()
     
+    def goto_page(self, number):
+        return self.current_page.goto_page(number)
+    
     def __update_display__(self):
         print("Page loaded:", self.current_page)
         self.display.show(self.current_page.group)
