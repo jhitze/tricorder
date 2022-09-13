@@ -25,6 +25,9 @@ class Pages():
     def goto_page(self, number):
         return self.current_page.goto_page(number)
     
+    def option_clicked(self):
+        self.current_page.option_clicked()
+    
     def __update_display__(self):
         print("Page loaded:", self.current_page)
         self.display.show(self.current_page.group)

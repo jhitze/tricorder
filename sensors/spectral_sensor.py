@@ -13,6 +13,7 @@ class SpectralSensor():
         self.yellow_590nm = 0
         self.orange_630nm = 0
         self.red_680nm    = 0
+        self.light_needed = False
 
     def setup(self):
         self.sensor = AS7341(self.i2c)
@@ -22,10 +23,14 @@ class SpectralSensor():
     async def check_sensor_readiness(self):
         pass
 
+    def option_clicked(self):
+        print("Changing light status")
+        self.light_needed = not self.light_needed
+
     async def update_values(self):
-        
-        print("enabling led to read colors")
-        self.sensor.led = True
+        if self.light_needed:
+            print("enabling led to read colors")
+            self.sensor.led = True
         self.violet_415nm  = self.sensor.channel_415nm
         self.indigo_445nm  = self.sensor.channel_445nm
         self.blue_480nm    = self.sensor.channel_480nm
@@ -34,8 +39,9 @@ class SpectralSensor():
         self.yellow_590nm  = self.sensor.channel_590nm
         self.orange_630nm  = self.sensor.channel_630nm
         self.red_680nm     = self.sensor.channel_680nm
-        print("disabling led")
-        self.sensor.led = False
+        if self.sensor.led:
+            print("disabling led")
+            self.sensor.led = False
         print("415nm/Violet  %s" % self.violet_415nm)
         print("445nm/Indigo %s" % self.indigo_445nm)
         print("480nm/Blue   %s" % self.blue_480nm)

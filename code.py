@@ -30,8 +30,8 @@ button_pin = board.D10
 num_pixels = 4
 pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.1, auto_write=False)
 
-next_button = DigitalInOut(button_pin)
-next_button.direction = Direction.INPUT
+option_button = DigitalInOut(button_pin)
+option_button.direction = Direction.INPUT
 
 seesaw = seesaw.Seesaw(i2c, 0x36)
 seesaw.pin_mode(24, seesaw.INPUT_PULLUP)
@@ -44,23 +44,29 @@ async def user_input_checker(pages):
     last_position = None
     button_held = False
     while True:
-        position = encoder.position
-        if position != last_position:
-            last_position = position
-            print("Position: {}".format(position))
-            page_set_to = pages.goto_page(position)
-            print("Page was set to: {}".format(page_set_to))
-            encoder.position = page_set_to
+        try:
+            position = encoder.position
+
+            if position != last_position:
+                last_position = position
+                print("Position: {}".format(position))
+                page_set_to = pages.goto_page(position)
+                print("Page was set to: {}".format(page_set_to))
+                encoder.position = page_set_to
 
 
-        elif not button.value and not button_held:
-            button_held = True
-            print("Button pressed")
-            
+            elif not button.value and not button_held:
+                button_held = True
+                print("Option button pressed")
+                pages.option_clicked()
 
-        elif button.value and button_held:
-            button_held = False
-            print("Button released")
+
+            elif button.value and button_held:
+                button_held = False
+                print("Button released")
+        except Exception as ex:
+            print("Error with encoder: {}".format(ex))
+            board.I2C().unlock()
 
         await asyncio.sleep(0)
 

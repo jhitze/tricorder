@@ -117,6 +117,9 @@ class SensorPage(Page):
         print("Sensor set page to #{}".format(page_index))
 
         return page_index
+    
+    def option_clicked(self):
+        self.current_sensor.option_clicked()
 
     async def run(self):
         while True:

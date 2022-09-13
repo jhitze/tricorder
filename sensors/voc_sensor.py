@@ -1,8 +1,9 @@
 import asyncio
 import adafruit_sgp30
 from adafruit_display_text import wrap_text_to_lines
+from sensors.sensor import Sensor
 
-class VOCSensor():
+class VOCSensor(Sensor):
     def __init__(self, i2c, co2_page):
         self.i2c = i2c
         self.co2_page = co2_page
