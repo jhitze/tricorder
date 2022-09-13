@@ -1,8 +1,9 @@
 import asyncio
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL
+from sensors.sensor import Sensor
 
-class NineAxisSensor():
+class NineAxisSensor(Sensor):
     def __init__(self, i2c):
         self.i2c = i2c
 

@@ -1,7 +1,8 @@
 import asyncio
 from adafruit_pm25.i2c import PM25_I2C
+from sensors.sensor import Sensor
 
-class AirParticulateSensor():
+class AirParticulateSensor(Sensor):
     def __init__(self, i2c):
         self.i2c = i2c
         self.reset_pin = None

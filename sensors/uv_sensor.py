@@ -1,6 +1,7 @@
 import adafruit_ltr390
+from sensors.sensor import Sensor
 
-class UVSensor():
+class UVSensor(Sensor):
     def __init__(self, i2c):
         self.i2c = i2c
         self.uv = 0

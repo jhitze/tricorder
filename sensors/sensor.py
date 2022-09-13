@@ -15,3 +15,6 @@ class Sensor():
 
     def text(self):
         pass
+    
+    def option_clicked(self):
+        pass

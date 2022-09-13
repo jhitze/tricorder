@@ -1,8 +1,9 @@
 import asyncio
 import adafruit_sgp30
 from adafruit_display_text import wrap_text_to_lines
+from sensors.sensor import Sensor
 
-class VOCSensor():
+class VOCSensor(Sensor):
     def __init__(self, i2c, co2_page):
         self.i2c = i2c
         self.co2_page = co2_page
@@ -40,7 +41,10 @@ class VOCSensor():
             self.temp = self.co2_page.temp
             self.relh = self.co2_page.relh
             print("Seting tvoc sensor's temp and hum:", self.temp, self.relh)
-            self.sgp30.set_iaq_relative_humidity(celsius=self.temp, relative_humidity=self.relh)
+            try:
+                self.sgp30.set_iaq_relative_humidity(celsius=self.temp, relative_humidity=self.relh)
+            except OSError as ex:
+                print("Error updating sgp30: {}".format(ex))
 
     def text(self):
         lines = []
