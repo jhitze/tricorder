@@ -3,6 +3,7 @@ import glob
 import shutil
 import os
 import filecmp
+import subprocess
 
 
 
@@ -28,10 +29,10 @@ def deploy(file_name):
     
     
     if (file_name.__contains__(".py") 
-            and not file_name.__contains__("__") 
+            # and not file_name.__contains__("__") 
             and not file_name.__contains__("code.py") 
             and not file_name.__contains__("bdf")):
-        os.popen('mpy-cross.static-x64-windows-7.3.2.exe {}'.format(source))
+        subprocess.call('mpy-cross.static-x64-windows-7.3.2.exe {}'.format(source))
         source_name, _ = os.path.splitext(source)
         source = source_name + ".mpy"
         dest_name, _ = os.path.splitext(final_destination)

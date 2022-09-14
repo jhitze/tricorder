@@ -1,6 +1,6 @@
 from adafruit_display_shapes.roundrect import RoundRect
 from adafruit_display_text import bitmap_label, wrap_text_to_lines
-import displayio
+from displayio import Group
 from terminalio import FONT
 import gc
 
@@ -19,7 +19,7 @@ WHITE = (255, 255, 255)
 def Co2View(sensor, display_width, start_x, start_y):
     gc.collect()
     print( "Before co2view loaded Available memory: {} bytes".format(gc.mem_free()) )
-    group = displayio.Group()
+    group = Group()
     width = 15
     height = 20
     radius = 4
@@ -30,7 +30,7 @@ def Co2View(sensor, display_width, start_x, start_y):
     # Label
     sensor_label = bitmap_label.Label(FONT, x=padded_start_x, y=start_y + gap*2, save_text = False, text="CO2")
     sensor_label.scale = 2
-    sensor_label.color = BLACK
+    sensor_label.color = WHITE
     group.append(sensor_label)
 
     start_y = start_y + gap + sensor_label.height
@@ -38,7 +38,7 @@ def Co2View(sensor, display_width, start_x, start_y):
     # Value
     value_label = bitmap_label.Label(FONT, x=padded_start_x, y=start_y + gap*2, save_text = False, text="{0:6d} ppm".format(int(sensor.co2)))
     value_label.scale = 3
-    value_label.color = BLACK
+    value_label.color = WHITE
     group.append(value_label)
 
     start_y = start_y + gap*2 + value_label.height

@@ -1,18 +1,51 @@
 import asyncio
-from adafruit_display_text import label
-from adafruit_display_shapes.rect import Rect
-from pages import *
+import gc
+print( "before page import Available memory: {} bytes".format(gc.mem_free()) )
 from pages.page import Page
+gc.collect()
+# from pages import FONT
+print( "before AirParticulateSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.air_particulate_sensor import AirParticulateSensor
+gc.collect()
+print( "before BarometerSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.barometer_sensor import BarometerSensor
+gc.collect()
+print( "before Co2Sensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.co2_sensor import Co2Sensor
+gc.collect()
+print( "before SpectralSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.spectral_sensor import SpectralSensor
+gc.collect()
+print( "before UVSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.uv_sensor import UVSensor
+gc.collect()
+print( "before VOCSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.voc_sensor import VOCSensor
+gc.collect()
+print( "before NineAxisSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.nine_axis_sensor import NineAxisSensor
+gc.collect()
+print( "before Co2View import Available memory: {} bytes".format(gc.mem_free()) )
 from views.sensors.co2_view import Co2View
+gc.collect()
+print( "before SpectralView import Available memory: {} bytes".format(gc.mem_free()) )
 from views.sensors.spectral_view import SpectralView
-import displayio
+gc.collect()
+# from displayio import Group
+# from adafruit_display_text import label
+
+
+RED = (255, 0, 0)
+YELLOW = (255, 150, 0)
+GREEN = (0, 255, 0)
+CYAN = (0, 255, 255)
+BLUE = (0, 0, 255)
+PURPLE = (180, 0, 255)
+BLACK = (0,0,0)
+WHITE = (255, 255, 255)
+
+
+
 
 class SensorPage(Page):
     def __init__(self, display_width, i2c):
@@ -21,8 +54,8 @@ class SensorPage(Page):
         self.pixel = 0
         self.current_sensor = None
         self.current_sensor_index = 0
-        self.display_group = displayio.Group()
-        self.default_view_group = displayio.Group()
+        # self.display_group = Group()
+        # self.default_view_group = Group()
         self.all_sensors = []
         self.setup_areas()
         self.setup_header()
@@ -38,15 +71,16 @@ class SensorPage(Page):
         # self.group.append(rect)
 
         # Setup and Center the c02 Label
-        # self.sensor_text_label = label.Label(font, text=" " * 20, line_spacing=1)
+        # self.sensor_text_label = label.Label(FONT, text=" " * 20, line_spacing=1)
         # self.sensor_text_label.anchor_point = (0.5, 0)
         # self.sensor_text_label.anchored_position = (self.display_width /2, 50)
-        # self.sensor_text_label.color = FOREGROUND_TEXT_COLOR
-        # self.sensor_text_label.scale = defaultLabelScale
+        # self.sensor_text_label.color = WHITE
+        # self.sensor_text_label.scale = 2
         # self.default_view_group.append(self.sensor_text_label)
         
-        self.display_group.append(self.default_view_group)
-        self.group.append(self.display_group)
+        # self.display_group.append(self.default_view_group)
+        # self.group.append(self.display_group)
+        pass
 
     
     def create_sensors(self):
@@ -128,14 +162,15 @@ class SensorPage(Page):
                     group = SpectralView(self.current_sensor, self.display_width, 0,50)
                 elif type(self.current_sensor) == Co2Sensor:
                     print("Using co2 view")
-                    group = Co2View(self.current_sensor, self.display_width, 0,50)
+                    group = Co2View(self.current_sensor, self.display_width, 0, 0)
                 else:
-                    print("Using DefaultView")
-                    group = self.default_view_group
-                    self.update_text(self.current_sensor.text())
+                    print("Using DefaultView with nothing in it")
+                    # group = self.default_view_group
+                    # self.update_text(self.current_sensor.text())
                 
-                del(self.display_group[0])
-                self.display_group.append(group)
+                # if len(self.display_group):
+                #     del(self.display_group[0])
+                self.group.append(group)
                 await asyncio.sleep(0.5)
             except Exception as e:
                 print("exception:", e)
@@ -143,6 +178,6 @@ class SensorPage(Page):
                 raise
     
 
-    def update_text(self, text):
-        self.sensor_text_label.text = text
+    # def update_text(self, text):
+    #     self.sensor_text_label.text = text
 

@@ -1,5 +1,5 @@
 from adafruit_display_shapes.rect import Rect
-import displayio
+from displayio import Group
 
 violet = 0xee82ee
 indigo = 0x4b0082
@@ -11,7 +11,7 @@ orange = 0xffa500
 red = 0xff0000 
 
 def SpectralView(sensor, display_width, start_x, start_y):
-    group = displayio.Group()
+    group = Group()
     base_width = 10
     width_to_show = display_width - start_x - base_width
 

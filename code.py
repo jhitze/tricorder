@@ -1,9 +1,9 @@
 import gc
 import board
 from pages.pages import Pages
-import digitalio
+print( "After pages import Available memory: {} bytes".format(gc.mem_free()) )
 import asyncio
-import busio
+from busio import I2C
 from digitalio import DigitalInOut, Direction
 from adafruit_seesaw import seesaw, rotaryio, digitalio
 
@@ -21,7 +21,7 @@ try:
 except AttributeError:
     pass
 
-i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
+i2c = I2C(board.SCL, board.SDA, frequency=100000)
 display = board.DISPLAY
 button_pin = board.D10
 num_pixels = 4
@@ -77,11 +77,12 @@ async def refresh_page(pages):
 async def main():
     pages = Pages(i2c, board.DISPLAY)
     print( "Main Started Available memory: {} bytes".format(gc.mem_free()) )
+    pages = Pages(i2c, board.DISPLAY)
+    user_input_task = asyncio.create_task(user_input_checker(pages))
+    page_update_task = asyncio.create_task(refresh_page(pages))
+    print( "After Tasks created Available memory: {} bytes".format(gc.mem_free()) )
 
     while True:
-        user_input_task = asyncio.create_task(user_input_checker(pages))
-        page_update_task = asyncio.create_task(refresh_page(pages))
-        print( "After Tasks created Available memory: {} bytes".format(gc.mem_free()) )
         # This will run forever, because user input task never exits.
         await asyncio.gather(user_input_task, page_update_task)
         
