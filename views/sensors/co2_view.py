@@ -17,11 +17,8 @@ def Co2View(sensor, display_width, start_x, start_y):
     height = 20
     radius = 4
     gap = 5
-    width_left = display_width
     padded_start_x = start_x + gap
-    print("Starting width_left:", width_left)
     number_of_bars = int((display_width - gap*2) / (width + gap))
-    print("number of bars", number_of_bars)
 
     for i in range(number_of_bars):
         display_range = sensor.danger_value() / number_of_bars
