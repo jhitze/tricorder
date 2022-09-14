@@ -30,20 +30,20 @@ class SensorPage(Page):
 
     def setup_areas(self):
         # Draw a top rectangle
-        rect = Rect(0, 0, 240, 140, fill=BACKGROUND_COLOR)
-        self.group.append(rect)
+        # rect = Rect(0, 0, 240, 140, fill=BACKGROUND_COLOR)
+        # self.group.append(rect)
 
         # Draw a Foreground Rectangle
-        rect = Rect(0, 50, 240, 140, fill=FOREGROUND_COLOR)
-        self.group.append(rect)
+        # rect = Rect(0, 50, 240, 140, fill=FOREGROUND_COLOR)
+        # self.group.append(rect)
 
         # Setup and Center the c02 Label
-        self.sensor_text_label = label.Label(font, text=" " * 20, line_spacing=1)
-        self.sensor_text_label.anchor_point = (0.5, 0)
-        self.sensor_text_label.anchored_position = (self.display_width /2, 50)
-        self.sensor_text_label.color = FOREGROUND_TEXT_COLOR
-        self.sensor_text_label.scale = defaultLabelScale
-        self.default_view_group.append(self.sensor_text_label)
+        # self.sensor_text_label = label.Label(font, text=" " * 20, line_spacing=1)
+        # self.sensor_text_label.anchor_point = (0.5, 0)
+        # self.sensor_text_label.anchored_position = (self.display_width /2, 50)
+        # self.sensor_text_label.color = FOREGROUND_TEXT_COLOR
+        # self.sensor_text_label.scale = defaultLabelScale
+        # self.default_view_group.append(self.sensor_text_label)
         
         self.display_group.append(self.default_view_group)
         self.group.append(self.display_group)
@@ -134,7 +134,7 @@ class SensorPage(Page):
                     group = self.default_view_group
                     self.update_text(self.current_sensor.text())
                 
-                self.display_group.pop()
+                del(self.display_group[0])
                 self.display_group.append(group)
                 await asyncio.sleep(0.5)
             except Exception as e:

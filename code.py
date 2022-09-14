@@ -76,11 +76,12 @@ async def refresh_page(pages):
 
 async def main():
     pages = Pages(i2c, board.DISPLAY)
+    print( "Main Started Available memory: {} bytes".format(gc.mem_free()) )
 
     while True:
         user_input_task = asyncio.create_task(user_input_checker(pages))
         page_update_task = asyncio.create_task(refresh_page(pages))
-        
+        print( "After Tasks created Available memory: {} bytes".format(gc.mem_free()) )
         # This will run forever, because user input task never exits.
         await asyncio.gather(user_input_task, page_update_task)
         

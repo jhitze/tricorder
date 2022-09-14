@@ -40,7 +40,7 @@ class VOCPage(Page):
         self.group.append(rect)
 
         # Setup and Center the c02 Label
-        self.tvoc_label = label.Label(font, text=" " * 20, line_spacing=1)
+        self.tvoc_label = label.Label(FONT, text=" " * 20, line_spacing=1)
         self.tvoc_label.anchor_point = (0.5, 0)
         self.tvoc_label.anchored_position = (self.display_width /2, 50)
         self.tvoc_label.color = FOREGROUND_TEXT_COLOR
@@ -48,7 +48,7 @@ class VOCPage(Page):
         self.group.append(self.tvoc_label)
 
         # Setup and Center the cognitive function Label
-        self.cognitive_function_label = label.Label(font, text=" " * 20, line_spacing=.75)
+        self.cognitive_function_label = label.Label(FONT, text=" " * 20, line_spacing=.75)
         self.cognitive_function_label.anchor_point = (0.5, 0)
         self.cognitive_function_label.anchored_position = (self.display_width /2, 75)
         self.cognitive_function_label.color = FOREGROUND_TEXT_COLOR
@@ -56,7 +56,7 @@ class VOCPage(Page):
         self.group.append(self.cognitive_function_label)
 
         # Setup and Center the refresh Label
-        self.refresh_label = label.Label(font, text=" " * 20, line_spacing=1)
+        self.refresh_label = label.Label(FONT, text=" " * 20, line_spacing=1)
         self.refresh_label.anchor_point = (0.5, 0)
         self.refresh_label.anchored_position = (self.display_width /2, 200)
         self.refresh_label.color = BACKGROUND_TEXT_COLOR

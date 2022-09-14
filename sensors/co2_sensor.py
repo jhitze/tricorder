@@ -31,7 +31,7 @@ class Co2Sensor(Sensor):
     def text(self):
         lines = []
         lines.append(self.co2_text(self.co2))
-        for line in self.cognitive_function_text(self.co2):
+        for line in self.cognitive_function_text():
             lines.append(line)
         lines.append(self.max_co2_text(self.co2))
         lines.append(self.temp_and_humidity_text(self.temp, self.relh))
@@ -44,24 +44,24 @@ class Co2Sensor(Sensor):
     # Numbers from Kurtis Baute
     # https://www.youtube.com/watch?v=1Nh_vxpycEA
     # https://www.youtube.com/watch?v=PoKvPkwP4mM
-    def cognitive_function_words(self, c02):
-        if(c02 > 39000):
+    def cognitive_function_words(self):
+        if(self.co2 > 39000):
             return "Death Possible"
-        elif(c02 >= 10000):
+        elif(self.co2 >= 10000):
             return "Long Term Health Risk"
-        elif(c02 >= 2000):
+        elif(self.co2 >= 2000):
             return "Physical Problems Possible"
-        elif(c02 >= 1400):
+        elif(self.co2 >= 1400):
             return "50% Cognitive Decrease"
-        elif(c02 >= 1000):
+        elif(self.co2 >= 1000):
             return "15% Cognitive Decrease"
-        elif(c02 > 500):
+        elif(self.co2 > 500):
             return "Above outside levels"
         else:
             return "Outside level ~411ppm"
 
-    def cognitive_function_text(self, co2):
-        return wrap_text_to_lines(self.cognitive_function_words(co2), 20)
+    def cognitive_function_text(self):
+        return wrap_text_to_lines(self.cognitive_function_words(), 20)
     
     def max_co2_text(self, max_co2_level):
         return "Max CO2: {:.0f} PPM".format(max_co2_level)
