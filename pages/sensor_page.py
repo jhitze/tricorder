@@ -10,6 +10,7 @@ from sensors.spectral_sensor import SpectralSensor
 from sensors.uv_sensor import UVSensor
 from sensors.voc_sensor import VOCSensor
 from sensors.nine_axis_sensor import NineAxisSensor
+from views.sensors.co2_view import Co2View
 from views.sensors.spectral_view import SpectralView
 import displayio
 
@@ -57,13 +58,13 @@ class SensorPage(Page):
         self.airParticulateSensor.setup()
         self.all_sensors.append(self.airParticulateSensor)
 
-        self.vocSensor = VOCSensor(self.i2c, self.co2Sensor)
-        try:
-            self.vocSensor.setup()
-        except Exception as ex:
-            print("VOC sensor failed to setup. - {0}".format(ex))
+        # self.vocSensor = VOCSensor(self.i2c, self.co2Sensor)
+        # try:
+        #     self.vocSensor.setup()
+        # except Exception as ex:
+        #     print("VOC sensor failed to setup. - {0}".format(ex))
         
-        self.all_sensors.append(self.vocSensor)
+        # self.all_sensors.append(self.vocSensor)
 
         self.barometerSensor = BarometerSensor(self.i2c)
         self.barometerSensor.setup()
@@ -125,6 +126,9 @@ class SensorPage(Page):
                 if type(self.current_sensor) == SpectralSensor:
                     print("Using SpectralView")
                     group = SpectralView(self.current_sensor, self.display_width, 0,50)
+                elif type(self.current_sensor) == Co2Sensor:
+                    print("Using co2 view")
+                    group = Co2View(self.current_sensor, self.display_width, 0,50)
                 else:
                     print("Using DefaultView")
                     group = self.default_view_group

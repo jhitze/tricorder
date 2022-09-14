@@ -68,3 +68,12 @@ class Co2Sensor(Sensor):
 
     def temp_and_humidity_text(self, temp, humidity):
         return "T:{:.2f}°C  H:{:.0f}%".format(temp, humidity)
+
+    def base_value(self):
+        return 500
+    
+    def warning_value(self):
+        return 1000
+    
+    def danger_value(self):
+        return 1400
