@@ -50,7 +50,7 @@ def deploy(file_name):
 
 def deployFolder(folder):
     print("Folder: {}".format(folder))
-    searchGlob = os.path.join(folder, "*.py")
+    searchGlob = os.path.join(folder, "*")
     listFromGlob = glob.glob(searchGlob, recursive=True)
     for item in listFromGlob:
         if(os.path.isdir(item)):
