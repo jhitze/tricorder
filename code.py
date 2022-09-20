@@ -10,18 +10,8 @@ from adafruit_seesaw import seesaw, rotaryio, digitalio
 print( "After last load in Code.py Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
 
-
-# Perform a couple extra steps for the HalloWing M4
-try:
-    if getattr(board, "CAP_PIN"):
-        # Create digitalio objects and pull low for HalloWing M4
-        cap_pin = digitalio.DigitalInOut(board.CAP_PIN)
-        cap_pin.direction = digitalio.Direction.OUTPUT
-        cap_pin.value = False
-except AttributeError:
-    pass
-
-i2c = I2C(board.SCL, board.SDA, frequency=100000)
+# i2c = I2C(board.SCL, board.SDA, frequency=100000, timeout = 1000)
+i2c = board.I2C()
 display = board.DISPLAY
 button_pin = board.D10
 num_pixels = 4

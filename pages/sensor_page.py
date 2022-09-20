@@ -1,6 +1,6 @@
 import asyncio
 import gc
-print( "before page import Available memory: {} bytes".format(gc.mem_free()) )
+print( "before sensor page import Available memory: {} bytes".format(gc.mem_free()) )
 from pages.page import Page
 gc.collect()
 # from pages import FONT

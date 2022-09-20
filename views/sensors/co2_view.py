@@ -43,7 +43,8 @@ def Co2View(sensor, display_width, start_x, start_y):
 
     start_y = start_y + gap*2 + value_label.height
     interpretation_label_background_color = BLACK
-    for i in range(number_of_bars):
+    i = 0
+    while i < number_of_bars:
         display_range = sensor.danger_value() / number_of_bars
         color_bars = int(max(sensor.co2 - sensor.base_value(), 1) / display_range)
 
@@ -59,6 +60,7 @@ def Co2View(sensor, display_width, start_x, start_y):
             interpretation_label_background_color = red
         roundrect = RoundRect(padded_start_x + ((width+gap) * i) + gap, start_y + gap , width, height, radius, fill=fill_color, stroke=2)
         group.append(roundrect)
+        i += 1
 
     print("After bar Available memory: {} bytes".format(gc.mem_free()) )
     gc.collect()
