@@ -1,5 +1,5 @@
 from adafruit_display_shapes.roundrect import RoundRect
-from adafruit_display_text import bitmap_label, wrap_text_to_lines
+from adafruit_display_text.label import Label
 from displayio import Group
 from terminalio import FONT
 import gc
@@ -16,74 +16,84 @@ gray = 0x808080
 BLACK = (0,0,0)
 WHITE = (255, 255, 255)
 
-def Co2View(sensor, display_width, start_x, start_y):
-    gc.collect()
-    print( "Before co2view loaded Available memory: {} bytes".format(gc.mem_free()) )
-    group = Group()
-    width = 15
-    height = 20
-    radius = 4
-    gap = 5
-    padded_start_x = start_x + gap
-    number_of_bars = int((display_width - gap*2) / (width + gap))
-    # FONT.load_glyphs("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.")
-    # Label
-    sensor_label = bitmap_label.Label(FONT, x=padded_start_x, y=start_y + gap*2, save_text = False, text="CO2")
-    sensor_label.scale = 2
-    sensor_label.color = WHITE
-    group.append(sensor_label)
+class Co2View:
+    def __init__(self, sensor, display_width, start_x, start_y):
+        gc.collect()
+        self.group = Group()
+        self.width = 15
+        self.height = 20
+        self.radius = 4
+        self.gap = 5
+        self.padded_start_x = start_x + self.gap
+        self.start_y = start_y
+        self.number_of_bars = int((display_width - self.gap*2) / (self.width + self.gap))
+        self.sensor = sensor
+        self.bars = []
+        print("co2view init done")
+    
+    def create_ui(self):
+        print("co2view create_ui")
+        # Label
+        sensor_label = Label(FONT, x=self.padded_start_x, y=self.start_y + self.gap*2, text="CO2")
+        sensor_label.scale = 2
+        sensor_label.color = WHITE
+        self.group.append(sensor_label)
 
-    start_y = start_y + gap + sensor_label.height
+        start_y = self.start_y + self.gap + sensor_label.height
 
-    # Value
-    value_label = bitmap_label.Label(FONT, x=padded_start_x, y=start_y + gap*2, save_text = False, text="{0:6d} ppm".format(int(sensor.co2)))
-    value_label.scale = 3
-    value_label.color = WHITE
-    group.append(value_label)
+        # Value
+        self.value_label = Label(FONT, x=self.padded_start_x, y=start_y + self.gap*2, text="{0:6d} ppm".format(0))
+        self.value_label.scale = 3
+        self.value_label.color = WHITE
+        self.group.append(self.value_label)
 
-    start_y = start_y + gap*2 + value_label.height
-    interpretation_label_background_color = BLACK
-    i = 0
-    while i < number_of_bars:
-        display_range = sensor.danger_value() / number_of_bars
-        color_bars = int(max(sensor.co2 - sensor.base_value(), 1) / display_range)
+        start_y = start_y + self.gap*2 + self.value_label.height
+        interpretation_label_background_color = BLACK
+        
+        i = 0
+        while i < self.number_of_bars:
+            
+            roundrect = RoundRect(self.padded_start_x + ((self.width+self.gap) * i) + self.gap, self.start_y + self.gap , self.width, self.height, self.radius, fill=gray, stroke=2)
+            self.bars.append(roundrect)
+            self.group.append(roundrect)
+            i += 1
+    
+        start_y = start_y + self.gap * 2 + self.height
 
-        fill_color = gray
-        if sensor.co2 < sensor.warning_value() and i < color_bars:
-            fill_color = green
-            interpretation_label_background_color = green
-        elif sensor.co2 < sensor.danger_value() and i < color_bars:
-            fill_color = yellow
-            interpretation_label_background_color = yellow
-        elif sensor.co2 >= sensor.danger_value():
-            fill_color = red
-            interpretation_label_background_color = red
-        roundrect = RoundRect(padded_start_x + ((width+gap) * i) + gap, start_y + gap , width, height, radius, fill=fill_color, stroke=2)
-        group.append(roundrect)
-        i += 1
+        # Text Interpretation
+        self.interpretation_label = Label(FONT, 
+                                        x=self.padded_start_x, 
+                                        y=start_y + self.gap*3,
+                                        padding_left = self.gap,
+                                        padding_bottom = self.gap,
+                                        text=self.sensor.cognitive_function_words())
+        self.interpretation_label.scale = 2
+        self.interpretation_label.color = WHITE
+        self.interpretation_label.background_color = interpretation_label_background_color
+        self.group.append(self.interpretation_label)
 
-    print("After bar Available memory: {} bytes".format(gc.mem_free()) )
-    gc.collect()
-    print("After bar GC Available memory: {} bytes".format(gc.mem_free()) )
-    start_y = start_y + gap * 2 + height
-    print("After bar start_y math Available memory: {} bytes".format(gc.mem_free()) )
-    message_background = RoundRect(padded_start_x, start_y, display_width - gap*2, height * 2, radius, fill=interpretation_label_background_color)
-    print("After background rect Available memory: {} bytes".format(gc.mem_free()) )
-    group.append(message_background)
+        start_y = start_y + self.gap*2 + self.interpretation_label.height
+        return self.group
 
-    # Text Interpretation
-    interpretation_text = wrap_text_to_lines(sensor.cognitive_function_words(), 20)
-    interpretation_label = bitmap_label.Label(FONT, 
-                                       x=padded_start_x, 
-                                       y=start_y + gap*3,
-                                       padding_left = gap,
-                                       padding_bottom = gap,
-                                       save_text = False,
-                                       text="\n".join(interpretation_text))
-    interpretation_label.scale = 2
-    interpretation_label.color = WHITE
-    # interpretation_label.background_color = interpretation_label_background_color
-    group.append(interpretation_label)
+    def update(self):
+        print("co2view update - {} bars".format(len(self.bars)))
+        i = 0
+        for bar in self.bars:
+            display_range = self.sensor.danger_value() / self.number_of_bars
+            color_bars = int(max(self.sensor.co2 - self.sensor.base_value(), 1) / display_range)
 
-    start_y = start_y + gap*2 + interpretation_label.height
-    return group
+            fill_color = gray
+            if self.sensor.co2 < self.sensor.warning_value() and i < color_bars:
+                fill_color = green
+                interpretation_label_background_color = green
+            elif self.sensor.co2 < self.sensor.danger_value() and i < color_bars:
+                fill_color = yellow
+                interpretation_label_background_color = yellow
+            elif self.sensor.co2 >= self.sensor.danger_value():
+                fill_color = red
+                interpretation_label_background_color = red
+            bar.fill = fill_color
+            i += 1
+        
+        self.value_label.text = "{0:6d} ppm".format(int(self.sensor.co2))
+        self.interpretation_label.background_color = interpretation_label_background_color

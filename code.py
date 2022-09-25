@@ -61,11 +61,10 @@ async def refresh_page(pages):
         try:
             await pages.current_page.run()
         except Exception as ex:
-            print(ex)
+            raise ex
         await asyncio.sleep(0)
 
 async def main():
-    pages = Pages(i2c, board.DISPLAY)
     print( "Main Started Available memory: {} bytes".format(gc.mem_free()) )
     pages = Pages(i2c, board.DISPLAY)
     user_input_task = asyncio.create_task(user_input_checker(pages))

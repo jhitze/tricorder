@@ -1,36 +1,15 @@
 import asyncio
-import gc
-print( "before sensor page import Available memory: {} bytes".format(gc.mem_free()) )
 from pages.page import Page
-gc.collect()
 # from pages import FONT
-print( "before AirParticulateSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.air_particulate_sensor import AirParticulateSensor
-gc.collect()
-print( "before BarometerSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.barometer_sensor import BarometerSensor
-gc.collect()
-print( "before Co2Sensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.co2_sensor import Co2Sensor
-gc.collect()
-print( "before SpectralSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.spectral_sensor import SpectralSensor
-gc.collect()
-print( "before UVSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.uv_sensor import UVSensor
-gc.collect()
-print( "before VOCSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.voc_sensor import VOCSensor
-gc.collect()
-print( "before NineAxisSensor import Available memory: {} bytes".format(gc.mem_free()) )
 from sensors.nine_axis_sensor import NineAxisSensor
-gc.collect()
-print( "before Co2View import Available memory: {} bytes".format(gc.mem_free()) )
 from views.sensors.co2_view import Co2View
-gc.collect()
-print( "before SpectralView import Available memory: {} bytes".format(gc.mem_free()) )
 from views.sensors.spectral_view import SpectralView
-gc.collect()
 # from displayio import Group
 # from adafruit_display_text import label
 
@@ -153,31 +132,31 @@ class SensorPage(Page):
         self.current_sensor.option_clicked()
 
     async def run(self):
+        self.current_view = None
+
         while True:
             try:
                 await self.current_sensor.check_sensor_readiness()
                 await self.current_sensor.update_values()
+
                 if type(self.current_sensor) == SpectralSensor:
                     print("Using SpectralView")
-                    group = SpectralView(self.current_sensor, self.display_width, 0,50)
+                    self.group = SpectralView(self.current_sensor, self.display_width, 0,50)
                 elif type(self.current_sensor) == Co2Sensor:
                     print("Using co2 view")
-                    group = Co2View(self.current_sensor, self.display_width, 0, 0)
+                    if type(self.current_view) != Co2View:
+                        self.current_view = Co2View(self.current_sensor, self.display_width, 0, 0)
+                        self.group = self.current_view.create_ui()
+                    
                 else:
                     print("Using DefaultView with nothing in it")
                     # group = self.default_view_group
                     # self.update_text(self.current_sensor.text())
                 
-                # if len(self.display_group):
-                #     del(self.display_group[0])
-                self.group.append(group)
+                self.current_view.update()
                 await asyncio.sleep(0.5)
             except Exception as e:
                 print("exception:", e)
                 await asyncio.sleep(.5)
                 raise
-    
-
-    # def update_text(self, text):
-    #     self.sensor_text_label.text = text
 

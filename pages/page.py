@@ -1,6 +1,5 @@
 from displayio import Group
 from adafruit_display_text import bitmap_label
-from pages import FONT
 
 RED = (255, 0, 0)
 YELLOW = (255, 150, 0)

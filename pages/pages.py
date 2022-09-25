@@ -1,10 +1,7 @@
-import gc
 from pages.sensor_page import SensorPage
 
 class Pages():
     def __init__(self, i2c, display):
-        self.start_mem = gc.mem_free()
-        print( "Before Pages Available memory: {} bytes".format(self.start_mem) ) 
         self.display = display
         self.i2c = i2c
         self.sensor_page = SensorPage(self.display.width, self.i2c)
