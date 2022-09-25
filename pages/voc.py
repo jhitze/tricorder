@@ -6,12 +6,11 @@ from pages.page import Page
 import adafruit_sgp30
 
 class VOCPage(Page):
-    def __init__(self, display_width, i2c, neopixels, co2_page):
+    def __init__(self, display_width, i2c, co2_page):
         Page.__init__(self, display_width)
         self.co2_page = co2_page
         self.temp = 20
         self.relh = 20
-        self.neopixels = neopixels
         self.pixel = 1
         self.i2c = i2c
         self.warmed_up = False
@@ -64,12 +63,8 @@ class VOCPage(Page):
         self.refresh_label.scale = defaultLabelScale
         self.group.append(self.refresh_label)
 
-    def set_pixel_color(self, color):
-        self.neopixels[self.pixel] = color
-        self.neopixels.show()
     
     async def check_sensor_readiness(self):
-        self.set_pixel_color(YELLOW)
         try:
             while not self.warmed_up and self.sgp30.eCO2 == 0:
                 self.update_refresh_text("Sensor Warming Up")
@@ -79,18 +74,14 @@ class VOCPage(Page):
             self.warmed_up = False
             print("exception", Exception)
         self.warmed_up = True
-        self.set_pixel_color(BLACK)
 
     async def update_values(self):
         self.update_refresh_text("Reading from sensor")
         try:
             self.__update_temp_and_relh__()
             self.tvoc = self.sgp30.TVOC
-            self.set_pixel_color(GREEN)
             print("TVOC: " + str(self.tvoc))
-            self.set_pixel_color(BLACK)
         except Exception:
-            self.neopixels[0] = RED
             raise
 
         self.update_tvoc()

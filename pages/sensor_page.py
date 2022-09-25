@@ -14,10 +14,9 @@ from views.sensors.spectral_view import SpectralView
 import displayio
 
 class SensorPage(Page):
-    def __init__(self, display_width, i2c, neopixels):
+    def __init__(self, display_width, i2c):
         Page.__init__(self, display_width)
         self.i2c = i2c
-        self.neopixels = neopixels
         self.pixel = 0
         self.current_sensor = None
         self.current_sensor_index = 0
@@ -48,9 +47,6 @@ class SensorPage(Page):
         self.display_group.append(self.default_view_group)
         self.group.append(self.display_group)
 
-    def set_pixel_color(self, color):
-        self.neopixels[self.pixel] = color
-        self.neopixels.show()
     
     def create_sensors(self):
         self.co2Sensor = Co2Sensor(self.i2c)
@@ -124,10 +120,8 @@ class SensorPage(Page):
     async def run(self):
         while True:
             try:
-                self.set_pixel_color(YELLOW)
                 await self.current_sensor.check_sensor_readiness()
                 await self.current_sensor.update_values()
-                self.set_pixel_color(GREEN)
                 if type(self.current_sensor) == SpectralSensor:
                     print("Using SpectralView")
                     group = SpectralView(self.current_sensor, self.display_width, 0,50)
@@ -138,10 +132,8 @@ class SensorPage(Page):
                 
                 self.display_group.pop()
                 self.display_group.append(group)
-                self.set_pixel_color(BLACK)
                 await asyncio.sleep(0.5)
             except Exception as e:
-                self.set_pixel_color(RED)
                 print("exception:", e)
                 await asyncio.sleep(.5)
                 raise
