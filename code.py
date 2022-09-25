@@ -1,13 +1,11 @@
 import gc
 import board
-import neopixel
 from pages.pages import Pages
 import digitalio
 import asyncio
 import busio
 from digitalio import DigitalInOut, Direction
 from adafruit_seesaw import seesaw, rotaryio, digitalio
-
 
 print( "After last load in Code.py Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
@@ -23,12 +21,10 @@ try:
 except AttributeError:
     pass
 
-i2c = busio.I2C(board.SCL, board.SDA, frequency=100000, timeout = 1000)
+i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
 display = board.DISPLAY
-pixel_pin = board.NEOPIXEL
 button_pin = board.D10
 num_pixels = 4
-pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.1, auto_write=False)
 
 option_button = DigitalInOut(button_pin)
 option_button.direction = Direction.INPUT
@@ -72,11 +68,14 @@ async def user_input_checker(pages):
 
 async def refresh_page(pages):
     while True:
-        await pages.current_page.run()
+        try:
+            await pages.current_page.run()
+        except Exception as ex:
+            print(ex)
         await asyncio.sleep(0)
 
 async def main():
-    pages = Pages(i2c, pixels, board.DISPLAY)
+    pages = Pages(i2c, board.DISPLAY)
 
     while True:
         user_input_task = asyncio.create_task(user_input_checker(pages))
