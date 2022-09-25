@@ -35,6 +35,7 @@ class SensorPage(Page):
         self.current_sensor_index = 0
         # self.display_group = Group()
         # self.default_view_group = Group()
+        self.current_view = None
         self.all_sensors = []
         self.setup_areas()
         self.setup_header()
@@ -132,31 +133,30 @@ class SensorPage(Page):
         self.current_sensor.option_clicked()
 
     async def run(self):
-        self.current_view = None
+        try:
+            await self.current_sensor.check_sensor_readiness()
+            await self.current_sensor.update_values()
 
-        while True:
-            try:
-                await self.current_sensor.check_sensor_readiness()
-                await self.current_sensor.update_values()
-
-                if type(self.current_sensor) == SpectralSensor:
-                    print("Using SpectralView")
-                    self.group = SpectralView(self.current_sensor, self.display_width, 0,50)
-                elif type(self.current_sensor) == Co2Sensor:
-                    print("Using co2 view")
-                    if type(self.current_view) != Co2View:
-                        self.current_view = Co2View(self.current_sensor, self.display_width, 0, 0)
-                        self.group = self.current_view.create_ui()
-                    
-                else:
-                    print("Using DefaultView with nothing in it")
-                    # group = self.default_view_group
-                    # self.update_text(self.current_sensor.text())
+            if type(self.current_sensor) == SpectralSensor:
+                print("Using SpectralView")
+                self.group = SpectralView(self.current_sensor, self.display_width, 0,50)
+            elif type(self.current_sensor) == Co2Sensor:
+                print("Using co2 view")
+                if type(self.current_view) != Co2View:
+                    self.current_view = Co2View(self.current_sensor, self.display_width, 0, 0)
+                    self.current_view.create_ui()
+                    self.group = self.current_view.group
                 
-                self.current_view.update()
-                await asyncio.sleep(0.5)
-            except Exception as e:
-                print("exception:", e)
-                await asyncio.sleep(.5)
-                raise
+            else:
+                print("Using DefaultView with nothing in it")
+                # group = self.default_view_group
+                # self.update_text(self.current_sensor.text())
+            
+            self.current_view.update()
+            
+            await asyncio.sleep(0.5)
+        except Exception as e:
+            print("exception:", e)
+            await asyncio.sleep(.5)
+            raise
 

@@ -1,3 +1,4 @@
+import asyncio
 from pages.sensor_page import SensorPage
 
 class Pages():
@@ -23,6 +24,10 @@ class Pages():
     
     def option_clicked(self):
         self.current_page.option_clicked()
+    
+    async def run(self):
+        await self.current_page.run()
+        self.__update_display__()
     
     def __update_display__(self):
         print("Page loaded:", self.current_page)

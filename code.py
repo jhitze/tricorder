@@ -59,7 +59,7 @@ async def user_input_checker(pages):
 async def refresh_page(pages):
     while True:
         try:
-            await pages.current_page.run()
+            await pages.run()
         except Exception as ex:
             raise ex
         await asyncio.sleep(0)

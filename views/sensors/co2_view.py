@@ -19,6 +19,7 @@ WHITE = (255, 255, 255)
 class Co2View:
     def __init__(self, sensor, display_width, start_x, start_y):
         gc.collect()
+        print(start_x, start_y)
         self.group = Group()
         self.width = 15
         self.height = 20
@@ -39,15 +40,15 @@ class Co2View:
         sensor_label.color = WHITE
         self.group.append(sensor_label)
 
-        start_y = self.start_y + self.gap + sensor_label.height
+        self.start_y = self.start_y + self.gap + sensor_label.height
 
         # Value
-        self.value_label = Label(FONT, x=self.padded_start_x, y=start_y + self.gap*2, text="{0:6d} ppm".format(0))
+        self.value_label = Label(FONT, x=self.padded_start_x, y=self.start_y + self.gap*2, text="{0:6d} ppm".format(0))
         self.value_label.scale = 3
         self.value_label.color = WHITE
         self.group.append(self.value_label)
 
-        start_y = start_y + self.gap*2 + self.value_label.height
+        self.start_y = self.start_y + self.gap*2 + self.value_label.height
         interpretation_label_background_color = BLACK
         
         i = 0
@@ -58,12 +59,12 @@ class Co2View:
             self.group.append(roundrect)
             i += 1
     
-        start_y = start_y + self.gap * 2 + self.height
+        self.start_y = self.start_y + self.gap * 2 + self.height
 
         # Text Interpretation
         self.interpretation_label = Label(FONT, 
                                         x=self.padded_start_x, 
-                                        y=start_y + self.gap*3,
+                                        y=self.start_y + self.gap*3,
                                         padding_left = self.gap,
                                         padding_bottom = self.gap,
                                         text=self.sensor.cognitive_function_words())
@@ -72,7 +73,7 @@ class Co2View:
         self.interpretation_label.background_color = interpretation_label_background_color
         self.group.append(self.interpretation_label)
 
-        start_y = start_y + self.gap*2 + self.interpretation_label.height
+        self.start_y = self.start_y + self.gap*2 + self.interpretation_label.height
         return self.group
 
     def update(self):
@@ -97,3 +98,4 @@ class Co2View:
         
         self.value_label.text = "{0:6d} ppm".format(int(self.sensor.co2))
         self.interpretation_label.background_color = interpretation_label_background_color
+        self.interpretation_label.text = self.sensor.cognitive_function_words()
