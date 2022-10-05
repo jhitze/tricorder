@@ -18,7 +18,7 @@ WHITE = (255, 255, 255)
 
 class Co2View:
     def __init__(self, sensor, display_width, start_x, start_y):
-        gc.collect()
+        # gc.collect()
         print(start_x, start_y)
         self.group = Group()
         self.width = 15
@@ -30,10 +30,8 @@ class Co2View:
         self.number_of_bars = int((display_width - self.gap*2) / (self.width + self.gap))
         self.sensor = sensor
         self.bars = []
-        print("co2view init done")
     
     def create_ui(self):
-        print("co2view create_ui")
         # Label
         sensor_label = Label(FONT, x=self.padded_start_x, y=self.start_y + self.gap*2, text="CO2")
         sensor_label.scale = 2
@@ -78,7 +76,6 @@ class Co2View:
         return self.group
 
     def update(self):
-        print("co2view update - {} bars".format(len(self.bars)))
         i = 0
         interpretation_label_background_color = gray
         for bar in self.bars:
@@ -87,15 +84,12 @@ class Co2View:
 
             fill_color = gray
             if self.sensor.co2 < self.sensor.warning_value() and i <= color_bars:
-                print("going green")
                 fill_color = green
                 interpretation_label_background_color = green
             elif self.sensor.co2 < self.sensor.danger_value() and i <= color_bars:
-                print("going yellow")
                 fill_color = yellow
                 interpretation_label_background_color = yellow
             elif self.sensor.co2 >= self.sensor.danger_value():
-                print("going red")
                 fill_color = red
                 interpretation_label_background_color = red
             bar.fill = fill_color
