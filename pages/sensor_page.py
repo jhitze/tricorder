@@ -192,7 +192,7 @@ class SensorPage(Page):
             
             # self.current_view.update()
             
-            await asyncio.sleep(0.5)
+            # await asyncio.sleep(0.5)
         except Exception as e:
             print("exception:", e)
             await asyncio.sleep(.5)
