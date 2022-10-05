@@ -121,8 +121,8 @@ class SensorPage(Page):
         self.spectralSensor = SpectralSensor(self.i2c)
         self.spectralSensor.setup()
         self.all_sensors.append(self.spectralSensor)
-        
-        self.test_page_layout.add_content(Group(), "Spectral")
+        self.spectral_view = SpectralView(self.spectralSensor, self.display_width, 0, self.gap)
+        self.test_page_layout.add_content(self.spectral_view.group, "Spectral")
 
         self.nineAxisSensor = NineAxisSensor(self.i2c)
         self.nineAxisSensor.setup()
@@ -179,15 +179,9 @@ class SensorPage(Page):
                 print("Using SpectralView")
                 # self.group = SpectralView(self.current_sensor, self.display_width, 0,50)
                 self.test_page_layout.show_page(page_name="Spectral")
+                self.spectral_view.update()
             elif type(self.current_sensor) == Co2Sensor:
-                # print("Using co2 view")
-                # if type(self.current_view) != Co2View:
-                #     self.current_view = Co2View(self.current_sensor, self.display_width, 0, 50)
-                #     self.current_view.create_ui()
-                #     self.sensor_display_group = self.current_view.group
-                #     if len(self.group) > self.header_objects:
-                #         self.group.pop()
-                #     self.group.append(self.sensor_display_group)
+                print("Using co2 view")
                 self.test_page_layout.show_page(page_name="CO2")
                 self.co2view.update()
                 
