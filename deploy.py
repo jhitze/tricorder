@@ -15,7 +15,8 @@ folders = [
     "font",
     "pages",
     "sensors",
-    "views"
+    "views",
+    "bmps"
 ]
 
 path = "."
