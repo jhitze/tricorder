@@ -67,6 +67,7 @@ class Co2View:
                                         y=self.start_y + self.gap*3,
                                         padding_left = self.gap,
                                         padding_bottom = self.gap,
+                                        fill=True,
                                         text=self.sensor.cognitive_function_words())
         self.interpretation_label.scale = 2
         self.interpretation_label.color = WHITE
@@ -79,18 +80,22 @@ class Co2View:
     def update(self):
         print("co2view update - {} bars".format(len(self.bars)))
         i = 0
+        interpretation_label_background_color = gray
         for bar in self.bars:
             display_range = self.sensor.danger_value() / self.number_of_bars
             color_bars = int(max(self.sensor.co2 - self.sensor.base_value(), 1) / display_range)
 
             fill_color = gray
-            if self.sensor.co2 < self.sensor.warning_value() and i < color_bars:
+            if self.sensor.co2 < self.sensor.warning_value() and i <= color_bars:
+                print("going green")
                 fill_color = green
                 interpretation_label_background_color = green
-            elif self.sensor.co2 < self.sensor.danger_value() and i < color_bars:
+            elif self.sensor.co2 < self.sensor.danger_value() and i <= color_bars:
+                print("going yellow")
                 fill_color = yellow
                 interpretation_label_background_color = yellow
             elif self.sensor.co2 >= self.sensor.danger_value():
+                print("going red")
                 fill_color = red
                 interpretation_label_background_color = red
             bar.fill = fill_color
