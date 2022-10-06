@@ -3,6 +3,9 @@ import glob
 import shutil
 import os
 import filecmp
+import subprocess
+
+
 
 files = [
     "code.py"
@@ -12,7 +15,8 @@ folders = [
     "font",
     "pages",
     "sensors",
-    "views"
+    "views",
+    "bmps"
 ]
 
 path = "."
@@ -23,6 +27,18 @@ destination = os.path.abspath(destination)
 def deploy(file_name):
     source = os.path.join(path, file_name)
     final_destination = os.path.join(destination, file_name)
+    
+    
+    if (file_name.__contains__(".py") 
+            # and not file_name.__contains__("__") 
+            and not file_name.__contains__("code.py") 
+            and not file_name.__contains__("bdf")):
+        subprocess.call('mpy-cross.static-x64-windows-7.3.2.exe {}'.format(source))
+        source_name, _ = os.path.splitext(source)
+        source = source_name + ".mpy"
+        dest_name, _ = os.path.splitext(final_destination)
+        final_destination = dest_name + ".mpy"
+        
 
     file_directory = os.path.dirname(final_destination)
     if(not os.path.exists(file_directory)):
@@ -43,6 +59,9 @@ def deployFolder(folder):
             deployFolder(item)
             continue
         deploy(item)
+
+# if not os.path.exists(mcross.exe):
+#     wget https://adafruit-circuit-python.s3.amazonaws.com/bin/mpy-cross/mpy-cross.static-x64-windows-7.3.2.exe
 
 for file in files:
     deploy(file)

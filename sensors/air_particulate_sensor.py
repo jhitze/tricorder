@@ -18,7 +18,11 @@ class AirParticulateSensor(Sensor):
         pass
 
     async def update_values(self):
-        self.aqdata = self.pm25Sensor.read()
+        try:
+            self.aqdata = self.pm25Sensor.read()
+        except Exception as ex:
+            print("Failed reading data.", ex)
+            return
         print("pm: " + str(self.aqdata))
         self.pm2p5 = self.aqdata["pm25 standard"]
         self.pm1p0 = self.aqdata["pm10 standard"]

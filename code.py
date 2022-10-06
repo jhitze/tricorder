@@ -1,27 +1,14 @@
 import gc
 import board
 from pages.pages import Pages
-import digitalio
 import asyncio
-import busio
+from busio import I2C
 from digitalio import DigitalInOut, Direction
 from adafruit_seesaw import seesaw, rotaryio, digitalio
 
-print( "After last load in Code.py Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
-
-
-# Perform a couple extra steps for the HalloWing M4
-try:
-    if getattr(board, "CAP_PIN"):
-        # Create digitalio objects and pull low for HalloWing M4
-        cap_pin = digitalio.DigitalInOut(board.CAP_PIN)
-        cap_pin.direction = digitalio.Direction.OUTPUT
-        cap_pin.value = False
-except AttributeError:
-    pass
-
-i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
+# i2c = I2C(board.SCL, board.SDA, frequency=100000, timeout = 1000)
+i2c = board.I2C()
 display = board.DISPLAY
 button_pin = board.D10
 num_pixels = 4
@@ -69,18 +56,17 @@ async def user_input_checker(pages):
 async def refresh_page(pages):
     while True:
         try:
-            await pages.current_page.run()
+            await pages.run()
         except Exception as ex:
-            print(ex)
+            raise ex
         await asyncio.sleep(0)
 
 async def main():
     pages = Pages(i2c, board.DISPLAY)
+    user_input_task = asyncio.create_task(user_input_checker(pages))
+    page_update_task = asyncio.create_task(refresh_page(pages))
 
     while True:
-        user_input_task = asyncio.create_task(user_input_checker(pages))
-        page_update_task = asyncio.create_task(refresh_page(pages))
-        
         # This will run forever, because user input task never exits.
         await asyncio.gather(user_input_task, page_update_task)
         

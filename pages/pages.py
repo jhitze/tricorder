@@ -1,10 +1,8 @@
-import gc
+import asyncio
 from pages.sensor_page import SensorPage
 
 class Pages():
     def __init__(self, i2c, display):
-        self.start_mem = gc.mem_free()
-        print( "Before Pages Available memory: {} bytes".format(self.start_mem) ) 
         self.display = display
         self.i2c = i2c
         self.sensor_page = SensorPage(self.display.width, self.i2c)
@@ -26,6 +24,10 @@ class Pages():
     
     def option_clicked(self):
         self.current_page.option_clicked()
+    
+    async def run(self):
+        await self.current_page.run()
+        self.__update_display__()
     
     def __update_display__(self):
         print("Page loaded:", self.current_page)
