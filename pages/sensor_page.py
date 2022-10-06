@@ -8,6 +8,7 @@ from sensors.spectral_sensor import SpectralSensor
 from sensors.uv_sensor import UVSensor
 from sensors.voc_sensor import VOCSensor
 from sensors.nine_axis_sensor import NineAxisSensor
+from views.sensors.air_particulate_view import AirParticulateView
 from views.sensors.co2_view import Co2View
 from views.sensors.spectral_view import SpectralView
 from adafruit_display_shapes.roundrect import RoundRect
@@ -18,7 +19,7 @@ from terminalio import FONT
 import board
 
 RED = (255, 0, 0)
-YELLOW = (255, 150, 0)
+YELLOW = (255, 255, 0)
 GREEN = (0, 255, 0)
 CYAN = (0, 255, 255)
 BLUE = (0, 0, 255)
@@ -105,6 +106,8 @@ class SensorPage(Page):
         self.airParticulateSensor = AirParticulateSensor(self.i2c)
         self.airParticulateSensor.setup()
         self.all_sensors.append(self.airParticulateSensor)
+        self.airParticulateView = AirParticulateView(self.airParticulateSensor, self.display_width, 0, self.gap)
+        self.test_page_layout.add_content(self.airParticulateView.group, "PM")
 
         # self.vocSensor = VOCSensor(self.i2c, self.co2Sensor)
         # try:
@@ -184,6 +187,10 @@ class SensorPage(Page):
                 print("Using co2 view")
                 self.test_page_layout.show_page(page_name="CO2")
                 self.co2view.update()
+            elif type(self.current_sensor) == AirParticulateSensor:
+                print("using air particulate view")
+                self.test_page_layout.show_page(page_name="PM")
+                self.airParticulateView.update()
                 
             else:
                 print("Using DefaultView with nothing in it")
