@@ -29,15 +29,15 @@ def deploy(file_name):
     final_destination = os.path.join(destination, file_name)
     
     
-    if (file_name.__contains__(".py") 
-            # and not file_name.__contains__("__") 
-            and not file_name.__contains__("code.py") 
-            and not file_name.__contains__("bdf")):
-        subprocess.call('mpy-cross.static-x64-windows-7.3.2.exe {}'.format(source))
-        source_name, _ = os.path.splitext(source)
-        source = source_name + ".mpy"
-        dest_name, _ = os.path.splitext(final_destination)
-        final_destination = dest_name + ".mpy"
+    # if (file_name.__contains__(".py") 
+    #         # and not file_name.__contains__("__") 
+    #         and not file_name.__contains__("code.py") 
+    #         and not file_name.__contains__("bdf")):
+    #     subprocess.call('mpy-cross.static-x64-windows-7.3.2.exe {}'.format(source))
+    #     source_name, _ = os.path.splitext(source)
+    #     source = source_name + ".mpy"
+    #     dest_name, _ = os.path.splitext(final_destination)
+    #     final_destination = dest_name + ".mpy"
         
 
     file_directory = os.path.dirname(final_destination)
