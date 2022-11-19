@@ -28,7 +28,11 @@ def deploy(file_name):
     source = os.path.join(path, file_name)
     final_destination = os.path.join(destination, file_name)
     
-    
+    if (source.__contains__(".mpy")):
+        print("Removing", source)
+        os.remove(source)
+        return
+
     # if (file_name.__contains__(".py") 
     #         # and not file_name.__contains__("__") 
     #         and not file_name.__contains__("code.py") 
