@@ -51,7 +51,7 @@ async def user_input_checker(pages):
             print("Error with encoder: {}".format(ex))
             board.I2C().unlock()
 
-        await asyncio.sleep(0)
+        await asyncio.sleep(0.5)
 
 async def refresh_page(pages):
     while True:
@@ -59,7 +59,7 @@ async def refresh_page(pages):
             await pages.run()
         except Exception as ex:
             raise ex
-        await asyncio.sleep(0)
+        await asyncio.sleep(0.5)
 
 async def main():
     pages = Pages(i2c, board.DISPLAY)
@@ -69,6 +69,6 @@ async def main():
     while True:
         # This will run forever, because user input task never exits.
         await asyncio.gather(user_input_task, page_update_task)
-        
+
 
 asyncio.run(main())

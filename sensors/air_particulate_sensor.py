@@ -30,7 +30,7 @@ class AirParticulateSensor(Sensor):
         self.pm10 = self.aqdata["pm100 standard"]
         if self.pm2p5 > self.max_pm2p5:
             self.max_pm2p5 = self.pm2p5
-        await asyncio.sleep(0)
+        await asyncio.sleep(0.1)
 
     def text(self):
         lines = []
@@ -46,10 +46,10 @@ class AirParticulateSensor(Sensor):
 
     def pm2p5_text(self, pm2p5):
         return "PM 2.5: {:.0f}".format(pm2p5)
-    
+
     def pm10_text(self, pm10):
         return "PM  10: {:.0f}".format(pm10)
-    
+
     def interpretation(self, pm2p5):
         if(pm2p5 > 12):
             return "PM2.5 is too high!"
