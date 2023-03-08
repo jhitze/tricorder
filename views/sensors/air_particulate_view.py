@@ -26,11 +26,14 @@ class AirParticulateView:
         self.start_y = start_y
         self.gap = 7
         
-        circle_one = Circle(self.start_x + 50, self.start_y + 10, 42, fill=orange)
+        print("Making circle")
+        circle_one = Circle(self.start_x + 20, self.start_y, 21, fill=orange)
         self.group.append(circle_one)
 
         self.start_y += 50
         self.start_x += 50
+
+        print("Making label")
         # Value
         self.pm_1_0_value_label = Label(FONT, 
                                     x=self.start_x + 40, 
@@ -47,6 +50,7 @@ class AirParticulateView:
         self.group.append(self.pm_1_0_value_label)
 
         # Value
+        print("Making label 2")
         align_x = self.pm_1_0_value_label.width + self.gap + 130
         self.pm_1_0_value = Label(FONT, x=self.start_x + align_x, y=self.start_y + self.gap*2, text="0")
         self.pm_1_0_value.scale = 3
@@ -71,6 +75,7 @@ class AirParticulateView:
 
 
         # Value
+        print("Making label 3")
         align_x = self.pm_2_5_value_label.width + self.gap + 130
         self.pm_2_5_value = Label(FONT, x=self.start_x + align_x, y=self.start_y + self.gap*2, text="0")
         self.pm_2_5_value.scale = 3
@@ -79,6 +84,7 @@ class AirParticulateView:
         
         self.start_y = self.start_y + self.gap*2 + self.pm_1_0_value_label.height + 30
 
+        print("Making label 4")
         self.pm_10_value_label = Label(FONT, 
                                     x=self.start_x + 40, 
                                     y=self.start_y + self.gap*2,
@@ -95,11 +101,15 @@ class AirParticulateView:
 
 
         # Value
+        print("Making label 5")
         align_x = self.pm_10_value_label.width + self.gap + 130
         self.pm_10_value = Label(FONT, x=self.start_x + align_x, y=self.start_y + self.gap*2, text="0")
         self.pm_10_value.scale = 3
         self.pm_10_value.color = orange
         self.group.append(self.pm_10_value)
+
+        print("Done with init.")
+    
     def group(self):
         return self.group
     

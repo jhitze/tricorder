@@ -22,6 +22,7 @@ class AirParticulateSensor(Sensor):
             self.aqdata = self.pm25Sensor.read()
         except Exception as ex:
             print("Failed reading data.", ex)
+            await asyncio.sleep(1)
             return
         print("pm: " + str(self.aqdata))
         self.pm2p5 = self.aqdata["pm25 standard"]
@@ -29,7 +30,7 @@ class AirParticulateSensor(Sensor):
         self.pm10 = self.aqdata["pm100 standard"]
         if self.pm2p5 > self.max_pm2p5:
             self.max_pm2p5 = self.pm2p5
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0)
 
     def text(self):
         lines = []
