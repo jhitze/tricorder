@@ -1,7 +1,5 @@
 import gc
-print( "Before terminialio in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 from terminalio import FONT
-print( "after terminialio in Code Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
 RED = (255, 0, 0)
 YELLOW = (255, 150, 0)

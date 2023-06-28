@@ -1,4 +1,4 @@
-#! python
+#! python3
 import glob
 import shutil
 import os
@@ -16,7 +16,7 @@ folders = [
 ]
 
 path = "."
-destination = 'd:\\'
+destination = '/Volumes/CIRCUITPY'
 
 destination = os.path.abspath(destination)
 

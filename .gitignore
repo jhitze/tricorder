@@ -128,3 +128,6 @@ dmypy.json
 .pyre/
 
 .vscode/
+
+*.mpy
+.DS_Store
