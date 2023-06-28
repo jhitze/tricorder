@@ -94,7 +94,7 @@ class SensorPage(Page):
 
     def create_sensors(self):
 
-
+        print("Booting up co2 sensor...")
         self.co2Sensor = Co2Sensor(self.i2c)
         self.co2Sensor.setup()
         self.all_sensors.append(self.co2Sensor)
@@ -103,6 +103,7 @@ class SensorPage(Page):
         self.co2view.create_ui()
         self.test_page_layout.add_content(self.co2view.group, "CO2")
 
+        print("Booting up air particulate sensor...")
         self.airParticulateSensor = AirParticulateSensor(self.i2c)
         self.airParticulateSensor.setup()
         self.all_sensors.append(self.airParticulateSensor)
@@ -121,6 +122,7 @@ class SensorPage(Page):
         # self.barometerSensor.setup()
         # self.all_sensors.append(self.barometerSensor)
 
+        # print("Booting up spectral sensor...")
         # self.spectralSensor = SpectralSensor(self.i2c)
         # self.spectralSensor.setup()
         # self.all_sensors.append(self.spectralSensor)

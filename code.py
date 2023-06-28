@@ -1,10 +1,14 @@
-import gc
+print("Starting user code")
 import board
+print("Board imported")
 from pages.pages import Pages
+print("pages imported")
 import asyncio
-from busio import I2C
+print("asyncio imported")
 from digitalio import DigitalInOut, Direction
+print("digitalio imported")
 from adafruit_seesaw import seesaw, rotaryio, digitalio
+print("Seesaw imported")
 
 
 # i2c = I2C(board.SCL, board.SDA, frequency=100000, timeout = 1000)
@@ -68,6 +72,7 @@ async def main():
 
     while True:
         # This will run forever, because user input task never exits.
+        await asyncio.sleep(0.1)
         await asyncio.gather(user_input_task, page_update_task)
 
 
