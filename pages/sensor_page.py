@@ -29,30 +29,26 @@ class SensorPage(Page):
 
     def setup_areas(self):
         # Draw a top rectangle
-        rect = Rect(0, 0, 240, 140, fill=BACKGROUND_COLOR)
-        self.group.append(rect)
-
-        # Draw a Foreground Rectangle
-        rect = Rect(0, 50, 240, 140, fill=FOREGROUND_COLOR)
+        rect = Rect(0, 0, 240, 40, fill=BACKGROUND_COLOR)
         self.group.append(rect)
 
         # Setup and Center the c02 Label
         self.sensor_text_label = label.Label(font, text=" " * 20, line_spacing=1)
         self.sensor_text_label.anchor_point = (0.5, 0)
         self.sensor_text_label.anchored_position = (self.display_width /2, 50)
-        self.sensor_text_label.color = FOREGROUND_TEXT_COLOR
+        self.sensor_text_label.color = BACKGROUND_TEXT_COLOR
         self.sensor_text_label.scale = defaultLabelScale
         self.default_view_group.append(self.sensor_text_label)
-        
+
         self.display_group.append(self.default_view_group)
         self.group.append(self.display_group)
 
-    
+
     def create_sensors(self):
         self.co2Sensor = Co2Sensor(self.i2c)
         self.co2Sensor.setup()
         self.all_sensors.append(self.co2Sensor)
-        
+
         self.airParticulateSensor = AirParticulateSensor(self.i2c)
         self.airParticulateSensor.setup()
         self.all_sensors.append(self.airParticulateSensor)
@@ -62,7 +58,7 @@ class SensorPage(Page):
             self.vocSensor.setup()
         except Exception as ex:
             print("VOC sensor failed to setup. - {0}".format(ex))
-        
+
         self.all_sensors.append(self.vocSensor)
 
         self.barometerSensor = BarometerSensor(self.i2c)
@@ -82,38 +78,38 @@ class SensorPage(Page):
         self.all_sensors.append(self.uvSensor)
 
         self.current_sensor = self.all_sensors[0]
-    
+
     def next(self):
         self.current_sensor_index = self.current_sensor_index + 1
         if self.current_sensor_index >= len(self.all_sensors):
             self.current_sensor_index = 0
-        
+
         print("Sensor Index: ", self.current_sensor_index)
         self.current_sensor = self.all_sensors[self.current_sensor_index]
-    
+
     def previous(self):
         self.current_sensor_index = self.current_sensor_index - 1
         if self.current_sensor_index < 0:
             self.current_sensor_index = len(self.all_sensors) - 1
-        
+
         print("Sensor Index: ", self.current_sensor_index)
         self.current_sensor = self.all_sensors[self.current_sensor_index]
 
     def sensor_count(self):
         return len(self.all_sensors)
-    
+
     def goto_page(self, number):
         page_index = number
         if page_index < 0:
             page_index = 0
         elif page_index >= self.sensor_count():
             page_index = self.sensor_count() - 1
-        
+
         self.current_sensor = self.all_sensors[page_index]
         print("Sensor set page to #{}".format(page_index))
 
         return page_index
-    
+
     def option_clicked(self):
         self.current_sensor.option_clicked()
 
@@ -129,7 +125,7 @@ class SensorPage(Page):
                     print("Using DefaultView")
                     group = self.default_view_group
                     self.update_text(self.current_sensor.text())
-                
+
                 self.display_group.pop()
                 self.display_group.append(group)
                 await asyncio.sleep(0.5)
@@ -137,7 +133,7 @@ class SensorPage(Page):
                 print("exception:", e)
                 await asyncio.sleep(.5)
                 raise
-    
+
 
     def update_text(self, text):
         self.sensor_text_label.text = text
