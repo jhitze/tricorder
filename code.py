@@ -6,6 +6,7 @@ import asyncio
 import busio
 from digitalio import DigitalInOut, Direction
 from adafruit_seesaw import seesaw, rotaryio, digitalio
+import adafruit_drv2605
 
 print( "After last load in Code.py Loaded Available memory: {} bytes".format(gc.mem_free()) )
 
@@ -27,6 +28,9 @@ display = board.DISPLAY
 button_pin = board.D10
 num_pixels = 4
 
+drv = adafruit_drv2605.DRV2605(i2c)
+drv.sequence[0] = adafruit_drv2605.Effect(1)
+
 option_button = DigitalInOut(button_pin)
 option_button.direction = Direction.INPUT
 
@@ -45,6 +49,8 @@ async def user_input_checker(pages):
             position = encoder.position
 
             if position != last_position:
+                drv.sequence[0] = adafruit_drv2605.Effect(1)
+                drv.play()
                 last_position = position
                 print("Position: {}".format(position))
                 page_set_to = pages.goto_page(position)
@@ -55,6 +61,8 @@ async def user_input_checker(pages):
             elif not button.value and not button_held:
                 button_held = True
                 print("Option button pressed")
+                drv.sequence[0] = adafruit_drv2605.Effect(12)
+                drv.play()
                 pages.option_clicked()
 
 
