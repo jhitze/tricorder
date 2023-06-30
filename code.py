@@ -49,6 +49,7 @@ async def user_input_checker(pages):
             position = encoder.position
 
             if position != last_position:
+                drv.sequence[0] = adafruit_drv2605.Effect(1)
                 drv.play()
                 last_position = position
                 print("Position: {}".format(position))
@@ -60,6 +61,8 @@ async def user_input_checker(pages):
             elif not button.value and not button_held:
                 button_held = True
                 print("Option button pressed")
+                drv.sequence[0] = adafruit_drv2605.Effect(12)
+                drv.play()
                 pages.option_clicked()
 
 
