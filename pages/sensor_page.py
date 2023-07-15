@@ -11,6 +11,7 @@ from sensors.uv_sensor import UVSensor
 # from sensors.voc_sensor import VOCSensor
 from sensors.lux_sensor import LuxSensor
 from sensors.nine_axis_sensor import NineAxisSensor
+from sensors.battery_level_sensor import BatteryLevelSensor
 from views.sensors.spectral_view import SpectralView
 import displayio
 
@@ -81,6 +82,10 @@ class SensorPage(Page):
         self.luxSensor = LuxSensor(self.i2c)
         self.luxSensor.setup()
         self.all_sensors.append(self.luxSensor)
+
+        self.batterySensor = BatteryLevelSensor(self.i2c)
+        self.batterySensor.setup()
+        self.all_sensors.append(self.batterySensor)
 
         self.current_sensor = self.all_sensors[0]
 
