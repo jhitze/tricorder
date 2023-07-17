@@ -12,8 +12,10 @@ from sensors.uv_sensor import UVSensor
 from sensors.lux_sensor import LuxSensor
 from sensors.nine_axis_sensor import NineAxisSensor
 from sensors.battery_level_sensor import BatteryLevelSensor
+from sensors.gps_sensor import GPSSensor
 from views.sensors.spectral_view import SpectralView
 import displayio
+import gc
 
 class SensorPage(Page):
     def __init__(self, display_width, i2c):
@@ -50,10 +52,12 @@ class SensorPage(Page):
         self.co2Sensor = Co2Sensor(self.i2c)
         self.co2Sensor.setup()
         self.all_sensors.append(self.co2Sensor)
+        gc.collect()
 
         self.airParticulateSensor = AirParticulateSensor(self.i2c)
         self.airParticulateSensor.setup()
         self.all_sensors.append(self.airParticulateSensor)
+        gc.collect()
 
         # self.vocSensor = VOCSensor(self.i2c, self.co2Sensor)
         # try:
@@ -66,26 +70,37 @@ class SensorPage(Page):
         self.barometerSensor = BarometerSensor(self.i2c)
         self.barometerSensor.setup()
         self.all_sensors.append(self.barometerSensor)
+        gc.collect()
 
         self.spectralSensor = SpectralSensor(self.i2c)
         self.spectralSensor.setup()
         self.all_sensors.append(self.spectralSensor)
+        gc.collect()
 
         self.nineAxisSensor = NineAxisSensor(self.i2c)
         self.nineAxisSensor.setup()
         self.all_sensors.append(self.nineAxisSensor)
+        gc.collect()
 
         self.uvSensor = UVSensor(self.i2c)
         self.uvSensor.setup()
         self.all_sensors.append(self.uvSensor)
+        gc.collect()
 
         self.luxSensor = LuxSensor(self.i2c)
         self.luxSensor.setup()
         self.all_sensors.append(self.luxSensor)
+        gc.collect()
 
         self.batterySensor = BatteryLevelSensor(self.i2c)
         self.batterySensor.setup()
         self.all_sensors.append(self.batterySensor)
+        gc.collect()
+
+        self.gpsSensor = GPSSensor(self.i2c)
+        self.gpsSensor.setup()
+        self.all_sensors.append(self.gpsSensor)
+        gc.collect()
 
         self.current_sensor = self.all_sensors[0]
 
@@ -127,20 +142,25 @@ class SensorPage(Page):
         while True:
             try:
                 await self.current_sensor.check_sensor_readiness()
+                gc.collect()
                 await self.current_sensor.update_values()
+                gc.collect()
                 if type(self.current_sensor) == SpectralSensor:
                     print("Using SpectralView")
                     group = SpectralView(self.current_sensor, self.display_width, 0,50)
                 else:
                     print("Using DefaultView")
                     group = self.default_view_group
+                    gc.collect()
                     self.update_text(self.current_sensor.text())
 
                 self.display_group.pop()
+                gc.collect()
                 self.display_group.append(group)
+                gc.collect()
                 await asyncio.sleep(0.5)
             except Exception as e:
-                print("exception:", e)
+                print("exception2:", e)
                 await asyncio.sleep(.5)
                 raise
 
